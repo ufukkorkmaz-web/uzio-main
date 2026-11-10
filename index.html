@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
 <title>Classroom Hub</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,7 +56,7 @@
 }
 
 html, body { height: 100%; }
-:root { transition: --accent .9s ease; }
+:root { transition: --accent 1.35s cubic-bezier(.22,.72,.24,1); }
 body {
   display: flex;
   flex-direction: column;
@@ -364,68 +364,70 @@ nav ul {
 @keyframes drift3 { to { translate: 22vmax -14vmax; scale: 1.2; } }
 @keyframes drift4 { to { translate: -20vmax -18vmax; scale: 1.35; } }
 
-/* ---------- Uzio room: a stage for the orb ---------- */
-.room { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; }
-.room-bg {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(60vmax 60vmax at 50% 52%, color-mix(in srgb, #b44dff 16%, transparent), transparent 70%),
-    color-mix(in srgb, var(--bg) 76%, transparent);
-  -webkit-backdrop-filter: blur(22px) saturate(1.5);
-  backdrop-filter: blur(22px) saturate(1.5);
-}
-.room-main { position: relative; display: flex; flex-direction: column; align-items: center; }
-.stage { position: relative; width: min(52vmin, 320px); aspect-ratio: 1; }
-.bloom { position: absolute; inset: -35%; border-radius: 50%; pointer-events: none; opacity: 0; background: radial-gradient(circle, rgba(255,255,255,.95), rgba(190,130,255,.38) 38%, transparent 68%); }
-.rings { position: absolute; inset: 0; pointer-events: none; }
-.rings i { position: absolute; inset: 8%; border-radius: 50%; border: 1.5px solid color-mix(in srgb, var(--fg) 45%, transparent); opacity: 0; }
-.orb-slot { position: absolute; inset: 12%; }
-.orb-float { position: absolute; inset: 0; }
-.room.idle .orb-float { animation: orbfloat 7s ease-in-out infinite alternate; }
-.orb-shadow { position: absolute; left: 22%; right: 22%; bottom: -2%; height: 7%; border-radius: 50%; background: radial-gradient(closest-side, color-mix(in srgb, var(--fg) 34%, transparent), transparent); filter: blur(6px); opacity: 0; }
-.room.idle .orb-shadow { animation: shpulse 7s ease-in-out infinite alternate; }
-.room-hint { margin: 30px 0 0; font: 600 12px/1 var(--font-body); letter-spacing: .22em; text-transform: uppercase; color: var(--muted); opacity: 0; }
-.room-close {
-  position: absolute;
-  top: calc(16px + env(safe-area-inset-top, 0px));
-  right: max(16px, env(safe-area-inset-right, 0px));
-  width: 40px; height: 40px;
-  display: grid; place-items: center;
-  padding: 0;
-  border-radius: 50%;
-  border: 1px solid var(--switch-edge);
-  background: color-mix(in srgb, var(--fg) 8%, transparent);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  color: var(--fg);
-  cursor: pointer;
-  opacity: 0;
-  transition: background .3s ease;
-}
-.room-close:hover { background: color-mix(in srgb, var(--fg) 16%, transparent); }
-.room-close:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
-.room-close svg { width: 16px; height: 16px; }
-.flydrop {
-  position: fixed; left: 0; top: 0;
-  width: 20px; height: 20px;
-  margin: -10px 0 0 -10px;
-  border-radius: 50%;
+/* ---------- Uzio bottom glow ---------- */
+.uzio-bottom-glow {
+  position: fixed;
+  left: 0; right: 0; bottom: -96px;
+  height: 290px;
+  z-index: 70;
   pointer-events: none;
-  z-index: 55;
   opacity: 0;
-  background: conic-gradient(from 30deg, #1ea7ff, #ff2d75, #b8ff1f, #b44dff, #ffa11a, #1ea7ff);
-  box-shadow: 0 0 16px rgba(180, 100, 255, .65), inset 0 0 4px rgba(255, 255, 255, .8);
+  transform: translateY(42px) scaleX(.98);
+  filter: blur(42px) saturate(1.34);
+  background:
+    radial-gradient(58% 128% at 8% 103%, rgba(255, 232, 188, .56) 0%, rgba(255, 213, 154, .30) 38%, transparent 74%),
+    radial-gradient(54% 132% at 27% 103%, rgba(255, 133, 50, .64) 0%, rgba(255, 133, 50, .29) 42%, transparent 76%),
+    radial-gradient(56% 132% at 44% 103%, rgba(250, 88, 133, .68) 0%, rgba(250, 88, 133, .30) 44%, transparent 77%),
+    radial-gradient(56% 132% at 61% 103%, rgba(80, 116, 255, .68) 0%, rgba(80, 116, 255, .29) 44%, transparent 77%),
+    radial-gradient(54% 130% at 79% 103%, rgba(69, 206, 244, .62) 0%, rgba(69, 206, 244, .28) 42%, transparent 76%),
+    radial-gradient(58% 128% at 96% 103%, rgba(143, 88, 235, .64) 0%, rgba(143, 88, 235, .29) 40%, transparent 75%);
+  mix-blend-mode: screen;
+  transition: opacity .8s ease, transform .95s cubic-bezier(.2,.8,.2,1), filter .95s ease;
+}
+.uzio-bottom-glow::before {
+  content: "";
+  position: absolute;
+  left: 3%; right: 3%; bottom: 4px;
+  height: 92px;
+  border-radius: 50%;
+  background: linear-gradient(90deg,
+    rgba(255,229,184,.52) 0%,
+    rgba(255,147,61,.62) 18%,
+    rgba(251,96,137,.64) 37%,
+    rgba(83,122,255,.64) 58%,
+    rgba(66,205,244,.58) 78%,
+    rgba(143,88,235,.60) 100%);
+  filter: blur(34px);
+  opacity: .74;
+}
+.uzio-bottom-glow::after {
+  content: "";
+  position: absolute;
+  left: 7%; right: 7%; bottom: 14px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(90deg,
+    rgba(255,236,201,.86) 0%,
+    rgba(255,139,49,.90) 18%,
+    rgba(252,91,133,.92) 38%,
+    rgba(77,114,255,.92) 59%,
+    rgba(59,202,244,.88) 79%,
+    rgba(137,83,235,.90) 100%);
+  filter: blur(22px);
+  opacity: .72;
+  transition: opacity .8s ease;
+}
+.uzio-bottom-glow.active {
+  opacity: .86;
+  transform: translateY(0) scaleX(1.01);
+  filter: blur(44px) saturate(1.40);
+}
+.uzio-bottom-glow.active::before { opacity: .96; }
+.uzio-bottom-glow.active::after { opacity: .96; }
+@media (prefers-reduced-motion: reduce) {
+  .uzio-bottom-glow { transition-duration: .01ms; }
 }
 
-/* Placeholder orb. Swap the contents of .orb-float for the final design. */
-.orb-glow { position: absolute; inset: -16%; border-radius: 50%; background: conic-gradient(from 0deg, #1ea7ff, #ff2d75, #b8ff1f, #b44dff, #ffa11a, #1ea7ff); filter: blur(46px); opacity: .5; animation: orbspin 30s linear infinite; }
-.orb { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; isolation: isolate; background: #080c27; box-shadow: 0 30px 60px -20px rgba(0, 0, 0, .45); }
-.orb::before { content: ""; position: absolute; inset: -22%; z-index: -1; background: conic-gradient(from 0deg, #1ea7ff, #ff2d75, #b8ff1f, #b44dff, #ffa11a, #1ea7ff); filter: blur(28px) saturate(1.2); animation: orbspin 24s linear infinite; }
-.orb::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 32% 24%, rgba(255,255,255,.9), rgba(255,255,255,0) 26%), radial-gradient(circle at 50% 50%, transparent 52%, rgba(0,0,0,.4) 100%); box-shadow: inset 0 0 0 1px rgba(255,255,255,.3), inset 0 -22px 44px rgba(255,255,255,.14); }
-@keyframes orbspin { to { rotate: 360deg; } }
-@keyframes orbfloat { from { transform: translateY(-6px); } to { transform: translateY(8px); } }
-@keyframes shpulse { from { scale: 1.08; } to { scale: .85; } }
 
 /* ---------- Hero ---------- */
 main { flex: 1; display: grid; align-items: center; justify-items: center; padding-block: 24px 72px; }
@@ -463,13 +465,17 @@ h1 {
   text-wrap: balance;
 }
 .copy p { margin: 0; max-width: 54ch; font-size: 17px; line-height: 1.6; color: var(--muted); }
-.view.swap .t { animation: rise .55s cubic-bezier(.2,.8,.3,1) both; }
-.view.swap .t:nth-child(2) { animation-delay: .06s; }
-.view.swap .t:nth-child(3) { animation-delay: .12s; }
-@keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.view.swap .t { animation: rise .72s cubic-bezier(.22,.78,.24,1) both; }
+.view.swap .t:nth-child(2) { animation-delay: .045s; }
+.view.swap .t:nth-child(3) { animation-delay: .09s; }
+@keyframes rise {
+  0% { opacity: 0; transform: translateY(8px); filter: blur(3px); }
+  45% { opacity: .96; filter: blur(.8px); }
+  100% { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .goo .b, .switch .stars i, .aurora i, .liquid, .liquid i, .brand .goo .base, .orb-glow, .orb::before, .room.idle .orb-float, .room.idle .orb-shadow { animation: none !important; }
+  .goo .b, .switch .stars i, .aurora i, .liquid, .liquid i, .brand .goo .base { animation: none !important; }
   *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
 </style>
@@ -486,7 +492,7 @@ h1 {
 <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 
 <header class="top">
-  <a class="pill brand" href="#uzio" aria-label="Open Uzio" aria-haspopup="dialog" style="--c:#ffffff">
+  <a class="pill brand" href="#uzio" aria-label="Activate Uzio" style="--c:#ffffff">
     <span class="goo" aria-hidden="true"><i class="base"></i></span>
     <span class="face"><span class="liquid" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="label">Uzio</span></span></a>
   <nav aria-label="Main">
@@ -537,23 +543,7 @@ h1 {
   </section>
 </main>
 
-<div class="room" id="room" role="dialog" aria-modal="true" aria-label="Uzio" hidden>
-  <div class="room-bg"></div>
-  <button class="room-close" type="button" aria-label="Close Uzio">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-  </button>
-  <div class="room-main">
-    <div class="stage">
-      <div class="bloom"></div>
-      <div class="rings"><i></i><i></i><i></i></div>
-      <div class="orb-shadow"></div>
-      <!-- The entrance animation drives .orb-slot as a whole. Replace what is inside .orb-float with the final orb. -->
-      <div class="orb-slot"><div class="orb-float"><div class="orb-glow"></div><div class="orb"></div></div></div>
-    </div>
-    <p class="room-hint">Uzio</p>
-  </div>
-</div>
-<i class="flydrop" id="flydrop" aria-hidden="true"></i>
+<div class="uzio-bottom-glow" id="uzioBottomGlow" aria-hidden="true"></div>
 
 <script>
 (function () {
@@ -629,7 +619,8 @@ h1 {
     p.addEventListener('click', function (e) {
       e.preventDefault();
       if (e.detail === 0) ripple(p, 0, 0, true); /* keyboard activation */
-      if (p.classList.contains('brand')) { openRoom(); return; }
+      if (p.classList.contains('brand')) { triggerUzioGlow(); return; }
+      clearUzioGlow();
       var id = p.getAttribute('data-view');
       if (location.hash !== '#' + id) location.hash = id; else show(id);
     });
@@ -723,139 +714,17 @@ h1 {
   window.addEventListener('resize', resettle);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(resettle);
 
-  /* ---------- Uzio room: opens a stage for the orb ---------- */
-  var room = document.getElementById('room');
-  var roomBg = room.querySelector('.room-bg');
-  var stage = room.querySelector('.stage');
-  var slot = room.querySelector('.orb-slot');
-  var ringEls = room.querySelectorAll('.rings i');
-  var bloomEl = room.querySelector('.bloom');
-  var shadowEl = room.querySelector('.orb-shadow');
-  var closeBtn = room.querySelector('.room-close');
-  var hintEl = room.querySelector('.room-hint');
-  var fly = document.getElementById('flydrop');
-  var brand = document.querySelector('.pill.brand');
-  var inertEls = [document.querySelector('.top'), document.querySelector('main')];
-  var roomState = 'closed', roomAnims = [], roomTimer = 0, pendingClose = false;
-
-  function centerOf(el) { var r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
-  function reach(c) { return Math.hypot(Math.max(c.x, innerWidth - c.x), Math.max(c.y, innerHeight - c.y)); }
-  function circ(c, r) { return 'circle(' + r + 'px at ' + c.x + 'px ' + c.y + 'px)'; }
-  function play(el, kf, opt) { opt.fill = 'both'; var a = el.animate(kf, opt); roomAnims.push(a); return a; }
-  function clearRoom() { roomAnims.forEach(function (a) { a.cancel(); }); roomAnims = []; }
-
-  /* A liquid drop that arcs from a to b, stretching along its path and rounding off as it lands. */
-  function dropFrames(a, b) {
-    var dx = b.x - a.x, dy = b.y - a.y;
-    var c = { x: (a.x + b.x) / 2 + dy * 0.3, y: (a.y + b.y) / 2 - dx * 0.3 };
-    var N = 22, out = [];
-    for (var i = 0; i < N; i++) {
-      var t = i / (N - 1), u = 1 - t;
-      var x = u * u * a.x + 2 * u * t * c.x + t * t * b.x;
-      var y = u * u * a.y + 2 * u * t * c.y + t * t * b.y;
-      var tx = 2 * u * (c.x - a.x) + 2 * t * (b.x - c.x);
-      var ty = 2 * u * (c.y - a.y) + 2 * t * (b.y - c.y);
-      var ang = Math.atan2(ty, tx) * 180 / Math.PI;
-      var s = Math.sin(Math.PI * t);
-      var sc = (0.7 + 0.3 * Math.min(1, t * 5)) * (t > 0.88 ? 1 - (t - 0.88) / 0.12 * 0.5 : 1);
-      var op = t < 0.05 ? t / 0.05 : (t > 0.93 ? (1 - t) / 0.07 : 1);
-      out.push({
-        transform: 'translate(' + x + 'px,' + y + 'px) rotate(' + ang + 'deg) scale(' + (sc * (1 + s)) + ',' + (sc * (1 - 0.32 * s)) + ')',
-        opacity: op,
-        offset: t
-      });
-    }
-    return out;
+  /* ---------- Uzio: persistent bottom-edge glow ---------- */
+  var uzioGlow = document.getElementById('uzioBottomGlow');
+  function triggerUzioGlow() {
+    if (!uzioGlow) return;
+    uzioGlow.classList.add('active');
+  }
+  function clearUzioGlow() {
+    if (!uzioGlow) return;
+    uzioGlow.classList.remove('active');
   }
 
-  function openRoom() {
-    if (roomState !== 'closed') return;
-    roomState = 'opening';
-    pendingClose = false;
-    [slot, shadowEl, hintEl, closeBtn].forEach(function (e) { e.style.opacity = '0'; });
-    room.classList.remove('idle');
-    room.hidden = false;
-    inertEls.forEach(function (e) { e.inert = true; });
-    if (reduce) {
-      [slot, shadowEl, hintEl, closeBtn].forEach(function (e) { e.style.opacity = '1'; });
-      roomState = 'open';
-      closeBtn.focus();
-      return;
-    }
-    var u = centerOf(brand), s = centerOf(stage), R = reach(u);
-
-    /* 1. The room blooms out of the Uzio pill */
-    play(roomBg, [{ clipPath: circ(u, 0) }, { clipPath: circ(u, R) }], { duration: 750, easing: 'cubic-bezier(.65,0,.25,1)' });
-    play(brand, [{ scale: 1 }, { scale: 0.9, offset: 0.25 }, { scale: 1 }], { duration: 450, easing: 'ease-out' });
-
-    /* 2. A drop leaves the pill and arcs to the centre of the room */
-    play(fly, dropFrames(u, s), { duration: 900, delay: 120, easing: 'cubic-bezier(.5,0,.2,1)' });
-
-    /* 3. It lands: a flash, then the orb swells out of it with a spring */
-    play(bloomEl, [{ transform: 'scale(.2)', opacity: 0 }, { transform: 'scale(.9)', opacity: 0.85, offset: 0.3 }, { transform: 'scale(1.7)', opacity: 0 }], { duration: 1000, delay: 930, easing: 'ease-out' });
-    play(slot, [
-      { transform: 'scale(.08)', opacity: 0, filter: 'brightness(2.4) blur(8px)', easing: 'ease-out' },
-      { transform: 'scale(.5)', opacity: 1, filter: 'brightness(1.9) blur(4px)', offset: 0.14, easing: 'ease-out' },
-      { transform: 'scale(1.12)', filter: 'brightness(1.4) blur(1px)', offset: 0.5, easing: 'ease-in-out' },
-      { transform: 'scale(.96)', filter: 'brightness(1.1) blur(0px)', offset: 0.72, easing: 'ease-in-out' },
-      { transform: 'scale(1.03)', filter: 'brightness(1.02) blur(0px)', offset: 0.88, easing: 'ease-in-out' },
-      { transform: 'scale(1)', opacity: 1, filter: 'brightness(1) blur(0px)' }
-    ], { duration: 1300, delay: 940 });
-
-    /* 4. Rings travel outward through the room */
-    ringEls.forEach(function (r, i) {
-      play(r, [{ transform: 'scale(.25)', opacity: 0 }, { opacity: 0.55, offset: 0.15 }, { transform: 'scale(2.2)', opacity: 0 }], { duration: 1500, delay: 940 + i * 150, easing: 'cubic-bezier(.2,.6,.3,1)' });
-    });
-
-    /* 5. The orb settles: shadow, label and close button arrive */
-    play(shadowEl, [{ opacity: 0, transform: 'scaleX(.4)' }, { opacity: 1, transform: 'scaleX(1)' }], { duration: 700, delay: 1400, easing: 'ease-out' });
-    play(hintEl, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { duration: 600, delay: 1500, easing: 'ease-out' });
-    play(closeBtn, [{ opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1 }], { duration: 400, delay: 800, easing: 'ease-out' });
-
-    roomTimer = setTimeout(function () {
-      roomState = 'open';
-      room.classList.add('idle');
-      closeBtn.focus();
-      if (pendingClose) closeRoom();
-    }, 2300);
-  }
-
-  /* The same moves in reverse: orb shrinks to a drop, flies home, and the room folds back into the pill. */
-  function closeRoom() {
-    if (roomState === 'opening') { pendingClose = true; return; }
-    if (roomState !== 'open') return;
-    roomState = 'closing';
-    clearTimeout(roomTimer);
-    room.classList.remove('idle');
-    if (reduce) { finishClose(); return; }
-    clearRoom();
-    [slot, shadowEl, hintEl, closeBtn].forEach(function (e) { e.style.opacity = '1'; });
-    var u = centerOf(brand), s = centerOf(stage), R = reach(u);
-    play(closeBtn, [{ opacity: 1 }, { opacity: 0 }], { duration: 200 });
-    play(hintEl, [{ opacity: 1 }, { opacity: 0 }], { duration: 200 });
-    play(shadowEl, [{ opacity: 1 }, { opacity: 0 }], { duration: 300 });
-    play(slot, [
-      { transform: 'scale(1)', opacity: 1, filter: 'brightness(1) blur(0px)' },
-      { transform: 'scale(.55)', opacity: 1, filter: 'brightness(1.6) blur(2px)', offset: 0.55 },
-      { transform: 'scale(.08)', opacity: 0, filter: 'brightness(2.4) blur(8px)' }
-    ], { duration: 560, easing: 'ease-in' });
-    play(fly, dropFrames(s, u), { duration: 650, delay: 440, easing: 'cubic-bezier(.5,0,.2,1)' });
-    play(roomBg, [{ clipPath: circ(u, R) }, { clipPath: circ(u, 0) }], { duration: 650, delay: 520, easing: 'cubic-bezier(.6,0,.3,1)' });
-    play(brand, [{ scale: 1 }, { scale: 1.1, offset: 0.4 }, { scale: 1 }], { duration: 450, delay: 1050, easing: 'ease-out' });
-    roomTimer = setTimeout(finishClose, 1200);
-  }
-
-  function finishClose() {
-    clearRoom();
-    room.hidden = true;
-    inertEls.forEach(function (e) { e.inert = false; });
-    roomState = 'closed';
-    brand.focus();
-  }
-
-  closeBtn.addEventListener('click', closeRoom);
-  room.addEventListener('click', function (e) { if (e.target === room || e.target === roomBg) closeRoom(); });
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeRoom(); });
 
   /* ---------- Sections ---------- */
   var views = {
@@ -867,6 +736,42 @@ h1 {
   };
   var view = document.getElementById('view');
 
+  /* Smoothly tween the page accent itself so all gradient layers flow between sections. */
+  var accentAnim = 0;
+  function colorToRgb(c) {
+    c = (c || '').trim();
+    var m;
+    if ((m = c.match(/^#([0-9a-f]{6})$/i))) {
+      var n = parseInt(m[1], 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+    if ((m = c.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i))) {
+      return [Number(m[1]), Number(m[2]), Number(m[3])];
+    }
+    return null;
+  }
+  function animateAccent(toColor) {
+    cancelAnimationFrame(accentAnim);
+    var from = colorToRgb(getComputedStyle(root).getPropertyValue('--accent')) || colorToRgb(toColor);
+    var to = colorToRgb(toColor);
+    if (!from || !to || reduce) { root.style.setProperty('--accent', toColor); return; }
+    var start = performance.now();
+    var duration = 1250;
+    function tick(now) {
+      var t = Math.min(1, (now - start) / duration);
+      /* smoothstep gives the gradient a soft start and soft landing */
+      var e = t * t * (3 - 2 * t);
+      var r = Math.round(from[0] + (to[0] - from[0]) * e);
+      var g = Math.round(from[1] + (to[1] - from[1]) * e);
+      var b = Math.round(from[2] + (to[2] - from[2]) * e);
+      root.style.setProperty('--accent', 'rgb(' + r + ',' + g + ',' + b + ')');
+      if (t < 1) accentAnim = requestAnimationFrame(tick);
+      else root.style.setProperty('--accent', toColor);
+    }
+    accentAnim = requestAnimationFrame(tick);
+  }
+
+  var viewSwapToken = 0;
   function show(id) {
     var v = views[id] || views.home;
     if (!views[id]) id = 'home';
@@ -874,14 +779,44 @@ h1 {
       if (p.getAttribute('data-view') === id) p.setAttribute('aria-current', 'page');
       else p.removeAttribute('aria-current');
     });
-    root.style.setProperty('--accent', v.c);
+    animateAccent(v.c);
     moveSlider(pillFor(id));
-    document.getElementById('eyebrow').textContent = v.e;
-    document.getElementById('title').textContent = v.t;
-    document.getElementById('blurb').textContent = v.p;
+
+    var token = ++viewSwapToken;
+    var textEls = Array.from(view.querySelectorAll('.t'));
     view.classList.remove('swap');
-    void view.offsetWidth;
-    view.classList.add('swap');
+
+    if (reduce || !textEls.length) {
+      document.getElementById('eyebrow').textContent = v.e;
+      document.getElementById('title').textContent = v.t;
+      document.getElementById('blurb').textContent = v.p;
+      view.classList.add('swap');
+      return;
+    }
+
+    Promise.all(textEls.map(function (el, i) {
+      return el.animate([
+        { opacity: 1, transform: 'translateY(0)', filter: 'blur(0)' },
+        { opacity: 0, transform: 'translateY(-5px)', filter: 'blur(2px)' }
+      ], {
+        duration: 170 + i * 16,
+        easing: 'cubic-bezier(.4,0,.6,1)',
+        fill: 'forwards'
+      }).finished.catch(function () {});
+    })).then(function () {
+      if (token !== viewSwapToken) return;
+      document.getElementById('eyebrow').textContent = v.e;
+      document.getElementById('title').textContent = v.t;
+      document.getElementById('blurb').textContent = v.p;
+      textEls.forEach(function (el) {
+        el.getAnimations().forEach(function (a) { a.cancel(); });
+        el.style.opacity = '';
+        el.style.transform = '';
+        el.style.filter = '';
+      });
+      void view.offsetWidth;
+      view.classList.add('swap');
+    });
   }
 
   window.addEventListener('hashchange', function () { show(location.hash.slice(1)); });
