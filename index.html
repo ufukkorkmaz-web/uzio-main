@@ -37,6 +37,7 @@
   --night: 0;
   --orb-shadow: rgba(40, 60, 150, .22);
   --accent: #007AFF;
+  --ink: var(--accent-ink, var(--accent)); /* readable version of the accent for small text on light backgrounds */
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -51,6 +52,7 @@
     --glass-shadow: 0 12px 40px rgba(0, 0, 0, .55), 0 1px 3px rgba(0, 0, 0, .4);
     --card-shadow: 0 1px 0 rgba(255, 255, 255, .04) inset, 0 10px 30px rgba(0, 0, 0, .4);
     --wall: .5; --night: 1; --orb-shadow: rgba(110, 130, 255, .3);
+    --ink: var(--accent);
   }
 }
 :root[data-theme="dark"] {
@@ -65,6 +67,7 @@
   --glass-shadow: 0 12px 40px rgba(0, 0, 0, .55), 0 1px 3px rgba(0, 0, 0, .4);
   --card-shadow: 0 1px 0 rgba(255, 255, 255, .04) inset, 0 10px 30px rgba(0, 0, 0, .4);
   --wall: .5; --night: 1; --orb-shadow: rgba(110, 130, 255, .3);
+  --ink: var(--accent);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -264,7 +267,7 @@ h1 { margin: 0; font-size: clamp(36px, 6.4vw, 60px); line-height: 1.03; font-wei
 .panel.is-out, .large.is-out { opacity: 0; }
 
 .sec { display: flex; align-items: baseline; justify-content: space-between; margin: 14px 4px 0; font-size: 24px; font-weight: 700; letter-spacing: -.025em; }
-.sec small { font-size: 15px; font-weight: 500; color: var(--accent); letter-spacing: -.01em; }
+.sec small { font-size: 15px; font-weight: 500; color: var(--ink); letter-spacing: -.01em; }
 
 .card { position: relative; padding: 24px; border-radius: 30px; background: var(--card); box-shadow: var(--card-shadow); overflow: hidden; }
 .card h2 { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 0 0 14px; font-size: 22px; font-weight: 700; letter-spacing: -.025em; }
@@ -690,7 +693,7 @@ h1 { margin: 0; font-size: clamp(36px, 6.4vw, 60px); line-height: 1.03; font-wei
   var views = {
     'home':     { c: '#1ea7ff',   e: 'Home',     t: 'Hey Uzay 👋', p: 'Ready for some English? Pick something fun, continue your quest, or ask Uzio for a challenge.' },
     'play':     { c: '#ff2d75',   e: 'Play',     t: 'Choose a game. Beat your best.', p: 'Fast English games for vocabulary, grammar, reading, listening and English IRL.' },
-    'practise': { c: '#b8ff1f',  e: 'Practise', t: 'Train one skill at a time', p: 'Choose what you want to improve. Uzio can make each activity easier, harder or completely new.' },
+    'practise': { c: '#b8ff1f', ink: '#4d6b00', e: 'Practise', t: 'Train one skill at a time', p: 'Choose what you want to improve. Uzio can make each activity easier, harder or completely new.' },
     'watch':    { c: '#b44dff', e: 'Watch',    t: 'Watch it. Catch it. Use it.', p: 'Short English videos with a tiny challenge after each one, so watching becomes practice.' },
     'my-quest': { c: '#ffa11a', e: 'My Quest', t: 'See how far you have come', p: 'Build streaks, collect skill badges and level up by actually using English.' }
   };
@@ -838,6 +841,7 @@ h1 { margin: 0; font-size: clamp(36px, 6.4vw, 60px); line-height: 1.03; font-wei
       if (on) { t.setAttribute('aria-current', 'page'); activeTab = t; } else t.removeAttribute('aria-current');
     });
     root.style.setProperty('--accent', v.c);
+    if (v.ink) root.style.setProperty('--accent-ink', v.ink); else root.style.removeProperty('--accent-ink');
     moveDrop(activeTab);
     swapContent(id, v);
     document.title = v.e === 'Home' ? 'Uzio English' : v.e + ' · Uzio English';
