@@ -55,7 +55,8 @@
   color-scheme: dark;
 }
 
-html, body { height: 100%; }
+html { height: 100%; }
+body { min-height: 100%; }
 :root { transition: --accent 1.35s cubic-bezier(.22,.72,.24,1); }
 body {
   display: flex;
@@ -310,7 +311,7 @@ nav ul {
   opacity: .9;
   animation: ripple .8s cubic-bezier(.2,.7,.3,1) forwards;
 }
-.ripple.ring {
+.ripple.ripple-ring {
   background: none;
   border: 2px solid color-mix(in srgb, var(--c) 70%, #fff);
   animation-duration: 1s;
@@ -500,10 +501,11 @@ body:has(.ask .pill:is(:hover, :focus-visible)) .uzio-bottom-glow {
 
 
 /* ---------- Hero ---------- */
-main { flex: 1; display: grid; align-items: center; justify-items: center; padding-block: 24px 72px; }
+main { flex: 1; width: min(1040px, 100%); margin-inline: auto; padding-block: 28px 130px; }
 .view {
   position: relative;
-  width: min(760px, 100%);
+  width: 100%;
+  margin-bottom: 30px;
 }
 .view .glow {
   position: absolute;
@@ -517,7 +519,7 @@ main { flex: 1; display: grid; align-items: center; justify-items: center; paddi
   opacity: .6;
   pointer-events: none;
 }
-.view .copy { position: relative; display: grid; gap: 18px; min-width: 0; }
+.view .copy { position: relative; display: grid; gap: 14px; min-width: 0; max-width: 760px; }
 .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -530,7 +532,7 @@ main { flex: 1; display: grid; align-items: center; justify-items: center; paddi
 .eyebrow::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
 h1 {
   margin: 0;
-  font: 600 clamp(2.3rem, 7vw, 4.2rem)/1.04 var(--font-display);
+  font: 600 clamp(2rem, 5.5vw, 3.4rem)/1.06 var(--font-display);
   letter-spacing: -.025em;
   text-wrap: balance;
 }
@@ -547,6 +549,219 @@ h1 {
 @media (prefers-reduced-motion: reduce) {
   .goo .b, .switch .stars i, .aurora i, .liquid, .liquid i, .brand .goo .base { animation: none !important; }
   *, *::before, *::after { transition-duration: .01ms !important; transition-delay: 0s !important; animation-duration: .01ms !important; }
+}
+</style>
+
+<style>
+/* ================= Tab content: cards, lists, badges, videos ================= */
+:root {
+  --card: rgba(255, 255, 255, 0.6);
+  --card-edge: rgba(23, 26, 44, 0.14);
+  --card-shadow: rgba(23, 26, 44, 0.16);
+  --track: rgba(23, 26, 44, 0.13);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --card: rgba(255, 255, 255, 0.07);
+    --card-edge: rgba(255, 255, 255, 0.16);
+    --card-shadow: rgba(0, 0, 0, 0.4);
+    --track: rgba(255, 255, 255, 0.15);
+  }
+}
+:root[data-theme="dark"] {
+  --card: rgba(255, 255, 255, 0.07);
+  --card-edge: rgba(255, 255, 255, 0.16);
+  --card-shadow: rgba(0, 0, 0, 0.4);
+  --track: rgba(255, 255, 255, 0.15);
+}
+
+.panel { width: 100%; }
+.dash { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 16px; }
+.dash > * { min-width: 0; }
+.s12 { grid-column: span 12; } .s7 { grid-column: span 7; } .s5 { grid-column: span 5; } .s3 { grid-column: span 3; }
+@media (max-width: 820px) { .s7, .s5 { grid-column: span 12; } .s3 { grid-column: span 6; } }
+
+.panel:not(.quiet) .dash > * { animation: pop .55s cubic-bezier(.22,.78,.24,1) both; }
+.panel:not(.quiet) .bar > i { animation: grow .9s cubic-bezier(.2,.8,.2,1) .25s both; }
+@keyframes pop { from { opacity: 0; transform: translateY(12px); } }
+@keyframes grow { from { width: 0; } }
+
+.card {
+  background: var(--card);
+  border: 2px solid var(--card-edge);
+  border-radius: 24px;
+  padding: 20px 22px;
+  box-shadow: 0 3px 0 var(--card-shadow);
+}
+.card h2 {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin: 0 0 14px;
+  font: 600 18px/1.2 var(--font-display);
+  letter-spacing: -.01em;
+}
+.hint { font: 500 13px/1.2 var(--font-body); color: var(--muted); text-decoration: none; }
+a.hint:hover { text-decoration: underline; }
+.kicker { font: 600 12px/1 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.info { min-width: 0; }
+.info b { display: block; font: 600 15px/1.3 var(--font-body); }
+.info small, .sub { display: block; margin-top: 3px; font: 400 13px/1.4 var(--font-body); color: var(--muted); }
+.list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.row { display: flex; align-items: center; gap: 12px; }
+.empty { text-align: center; padding: 26px 12px; color: var(--muted); font-size: 15px; display: grid; justify-items: center; gap: 10px; }
+.empty .mascot { width: 84px; height: 84px; }
+
+/* chips, bars, buttons */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 11px; border-radius: 999px;
+  font: 600 12px/1.1 var(--font-body);
+  color: color-mix(in srgb, var(--c, var(--accent)) 30%, var(--ink-base));
+  background: color-mix(in srgb, var(--c, var(--accent)) 20%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--c, var(--accent)) 55%, transparent);
+  white-space: nowrap;
+}
+.bar { height: 12px; border-radius: 99px; background: var(--track); overflow: hidden; }
+.bar > i {
+  display: block; height: 100%; width: var(--w, 0%); border-radius: inherit;
+  background: linear-gradient(90deg, var(--c, var(--accent)), color-mix(in srgb, var(--c, var(--accent)) 55%, #fff));
+}
+.btn, .sg {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 18px; border-radius: 999px; cursor: pointer; text-decoration: none;
+  font: 700 14px/1 var(--font-body);
+  border: 2px solid color-mix(in srgb, var(--c, var(--accent)) 65%, transparent);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--c, var(--accent)) 55%, transparent);
+  transition: transform .15s ease, box-shadow .15s ease, background-color .25s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn { background: var(--c, var(--accent)); border-color: var(--c, var(--accent)); color: #0b0e1d; box-shadow: 0 3px 0 color-mix(in srgb, var(--c, var(--accent)) 60%, #0b0e1d); }
+.sg { background: color-mix(in srgb, var(--c, var(--accent)) 14%, transparent); color: var(--fg); }
+.sg[aria-pressed="true"] { background: var(--c, var(--accent)); border-color: var(--c, var(--accent)); color: #0b0e1d; box-shadow: 0 3px 0 color-mix(in srgb, var(--c, var(--accent)) 60%, #0b0e1d); }
+.btn:hover, .sg:hover { transform: translateY(-2px); }
+.btn:active, .sg:active { transform: translateY(3px); box-shadow: 0 0 0 transparent; }
+.btn:focus-visible, .sg:focus-visible, .thumb:focus-visible, .star:focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+.card > .btn { margin-top: 16px; }
+.seg { display: flex; flex-wrap: wrap; gap: 10px; }
+.sg .n { display: inline-grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 99px; background: rgba(0,0,0,.14); font-size: 12px; }
+
+/* mascot */
+.mascot { width: 112px; height: 112px; flex: none; animation: bob 3.2s ease-in-out infinite; overflow: visible; }
+.mascot .eyes { animation: blink 4.5s infinite; transform-origin: 60px 62px; }
+@keyframes bob { 50% { transform: translateY(-6px); } }
+@keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
+
+/* home */
+.hero-card { display: flex; align-items: center; gap: 22px; }
+.hero-card > div { flex: 1; min-width: 0; }
+.big { font: 600 34px/1 var(--font-display); letter-spacing: -.02em; margin-bottom: 14px; }
+.big small { font: 500 15px var(--font-body); color: var(--muted); letter-spacing: 0; }
+.q { margin: 0 0 12px; font: 600 16px/1.3 var(--font-body); }
+.checks { list-style: none; margin: 14px 0 0; padding: 0; display: grid; gap: 8px; font-size: 14px; }
+.due-big { display: flex; align-items: center; gap: 14px; margin-bottom: 4px; }
+.ico {
+  flex: none; width: 44px; height: 44px; border-radius: 14px; display: grid; place-items: center; font-size: 22px;
+  background: color-mix(in srgb, var(--c, var(--accent)) 30%, transparent);
+}
+.ico.big { width: 56px; height: 56px; font-size: 28px; border-radius: 18px; }
+.lesson {
+  display: grid; grid-template-columns: 50px 44px 1fr auto; gap: 12px; align-items: center;
+  padding: 11px 14px; border-radius: 18px;
+  background: color-mix(in srgb, var(--c) 13%, transparent);
+  border: 2px solid color-mix(in srgb, var(--c) 40%, transparent);
+}
+.lesson .time { font: 600 14px var(--font-display); }
+.lesson.now { border-color: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 35%, transparent); }
+.lesson.done { opacity: .7; }
+@media (max-width: 520px) {
+  .lesson { grid-template-columns: 44px 40px 1fr; }
+  .lesson .chip { grid-column: 3; justify-self: start; }
+  .hero-card { gap: 14px; } .mascot { width: 84px; height: 84px; }
+}
+
+/* gamification */
+.lvl { display: flex; align-items: center; gap: 20px; }
+.ring { position: relative; flex: none; width: 124px; height: 124px; border-radius: 50%; display: grid; place-items: center; align-content: center; background: conic-gradient(var(--accent) calc(var(--p) * 1%), var(--track) 0); }
+.ring::before { content: ""; position: absolute; inset: 13px; border-radius: 50%; background: color-mix(in srgb, var(--bg) 60%, #fff); }
+.ring b, .ring span { position: relative; text-align: center; }
+.ring b { font: 600 38px/1 var(--font-display); }
+.ring span { font: 600 10px/1 var(--font-body); letter-spacing: .16em; color: var(--muted); margin-top: -34px; }
+.week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
+.day { display: grid; gap: 8px; justify-items: center; font: 600 12px var(--font-body); color: var(--muted); }
+.day i { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 20px; background: var(--track); }
+.day.done i { background: linear-gradient(160deg, #ffa11a, #ff2d75); }
+.day.today i { background: transparent; border: 3px solid var(--accent); }
+.day.today { color: var(--fg); }
+.badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+.badge { display: grid; justify-items: center; gap: 6px; text-align: center; padding: 16px 10px; border-radius: 20px; border: 2px solid color-mix(in srgb, var(--c) 45%, transparent); background: color-mix(in srgb, var(--c) 12%, transparent); }
+.badge .coin { width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; font-size: 30px; background: var(--c); box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 60%, #0b0e1d); }
+.badge b { font: 600 14px var(--font-body); }
+.badge small { font-size: 12px; color: var(--muted); line-height: 1.35; }
+.badge.lock { border-style: dashed; border-color: var(--card-edge); background: transparent; }
+.badge.lock .coin { background: var(--track); box-shadow: none; filter: grayscale(1); opacity: .55; }
+.lb { display: grid; grid-template-columns: 30px 42px 1fr auto; gap: 12px; align-items: center; padding: 8px 10px; border-radius: 16px; }
+.lb .rank { text-align: center; font: 600 16px var(--font-display); }
+.lb .av { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; font: 700 17px var(--font-display); background: var(--c); color: #0b0e1d; }
+.lb .xp { font: 600 14px var(--font-display); }
+.lb .bar { height: 8px; margin-top: 6px; }
+.lb.you { background: color-mix(in srgb, var(--accent) 22%, transparent); border: 2px solid color-mix(in srgb, var(--accent) 70%, transparent); }
+
+/* videos */
+.vgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
+.thumb {
+  position: relative; display: block; width: 100%; aspect-ratio: 16 / 9; padding: 0; border: 0; border-radius: 18px; overflow: hidden; cursor: pointer; font: inherit; color: #fff;
+  background: linear-gradient(135deg, var(--c), color-mix(in srgb, var(--c) 45%, #0b0e1d));
+  box-shadow: 0 4px 0 color-mix(in srgb, var(--c) 55%, #0b0e1d);
+  transition: transform .15s ease;
+}
+.thumb:hover { transform: translateY(-2px); }
+.thumb:active { transform: translateY(3px); }
+.thumb .emo { position: absolute; left: 14px; top: 8px; font-size: 34px; }
+.thumb .play { position: absolute; inset: 0; margin: auto; width: 54px; height: 54px; border-radius: 50%; display: grid; place-items: center; padding-left: 3px; background: rgba(255,255,255,.93); color: #0b0e1d; font-size: 18px; transition: transform .3s cubic-bezier(.3,1.6,.5,1); }
+.thumb:hover .play { transform: scale(1.12); }
+.thumb .dur { position: absolute; right: 10px; bottom: 12px; padding: 4px 8px; border-radius: 8px; background: rgba(11,14,29,.78); font: 600 12px var(--font-body); }
+.thumb .new { position: absolute; right: 10px; top: 10px; padding: 4px 9px; border-radius: 999px; background: #fff; color: #0b0e1d; font: 700 11px var(--font-body); letter-spacing: .06em; }
+.thumb .prog { position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: rgba(0,0,0,.35); }
+.thumb .prog i { display: block; height: 100%; background: #fff; }
+.vmeta { display: flex; justify-content: space-between; gap: 10px; margin-top: 12px; }
+.vmeta h3 { margin: 0 0 4px; font: 600 15px/1.3 var(--font-body); }
+.star { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--card-edge); background: var(--card); color: var(--fg); font-size: 20px; line-height: 1; cursor: pointer; }
+.star.on { color: #ffa11a; border-color: #ffa11a; }
+
+/* classes */
+.slot { display: grid; grid-template-columns: 72px 1fr; gap: 14px; align-items: start; }
+.when { padding-top: 14px; text-align: right; }
+.when b { display: block; font: 600 17px var(--font-display); }
+.when small { color: var(--muted); font-size: 12px; }
+.lcard { padding: 14px 16px; border-radius: 20px; border: 2px solid color-mix(in srgb, var(--c) 45%, transparent); background: color-mix(in srgb, var(--c) 13%, transparent); border-left-width: 8px; border-left-color: var(--c); }
+.lcard.now { box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 35%, transparent); }
+.lcard .chips { margin-top: 10px; }
+.sgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+.scard { padding: 16px; border-radius: 20px; border: 2px solid color-mix(in srgb, var(--c) 40%, transparent); background: color-mix(in srgb, var(--c) 11%, transparent); display: grid; gap: 10px; }
+.scard .unit { font-weight: 600; }
+
+/* assignments */
+.stat b { display: block; font: 600 36px/1 var(--font-display); letter-spacing: -.02em; }
+.stat span { display: block; margin-top: 6px; font-size: 13px; color: var(--muted); }
+.asg { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 16px 18px; border-left-width: 8px; border-left-color: var(--c); }
+.asg .info { flex: 1 1 220px; }
+.asg .end { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.asg .end .chip { margin: 0; }
+.grade { padding: 10px 16px; border-radius: 16px; background: var(--c); color: #0b0e1d; font: 600 22px/1 var(--font-display); box-shadow: 0 3px 0 color-mix(in srgb, var(--c) 60%, #0b0e1d); }
+
+/* toast */
+.toast {
+  position: fixed; z-index: 90; left: 50%; bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  max-width: calc(100vw - 32px); padding: 13px 20px; border-radius: 999px;
+  background: #0b0e1d; color: #fff; border: 2px solid rgba(255,255,255,.25);
+  font: 600 14px/1.3 var(--font-body); box-shadow: 0 10px 28px -8px rgba(0,0,0,.5);
+  opacity: 0; transform: translate(-50%, 16px); pointer-events: none;
+  transition: opacity .25s ease, transform .35s cubic-bezier(.3,1.5,.5,1);
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot, .mascot .eyes { animation: none !important; }
 }
 </style>
 
@@ -614,6 +829,7 @@ h1 {
       <p class="t" id="blurb">Pick up where you left off. Today's lessons, unread class notes and your next deadline are one tap away.</p>
     </div>
   </section>
+  <div class="panel" id="panel"></div>
 </main>
 
 <div class="uzio-bottom-glow" id="uzioBottomGlow" aria-hidden="true"></div>
@@ -674,7 +890,7 @@ h1 {
     var x = center ? r.width / 2 : clientX - r.left;
     var y = center ? r.height / 2 : clientY - r.top;
     var size = Math.hypot(Math.max(x, r.width - x), Math.max(y, r.height - y)) * 2.2;
-    ['', 'ring'].forEach(function (cls) {
+    ['', 'ripple-ring'].forEach(function (cls) {
       var s = document.createElement('span');
       s.className = 'ripple' + (cls ? ' ' + cls : '');
       s.style.setProperty('--rx', x + 'px');
@@ -705,7 +921,7 @@ h1 {
     for (var i = 0; i < pills.length; i++) if (pills[i].getAttribute('data-view') === id) return pills[i];
     return pills[0];
   }
-  function geom(p) { return { l: p.offsetLeft - 5, t: p.offsetTop - 5, w: p.offsetWidth + 10, h: p.offsetHeight + 10 }; }
+  function geom(p) { return { l: p.offsetLeft, t: p.offsetTop, w: p.offsetWidth, h: p.offsetHeight }; }
   function box(g) { return { left: g.l + 'px', top: g.t + 'px', width: g.w + 'px', height: g.h + 'px' }; }
   var dw = document.querySelector('.dropwrap');
   var dFrom = dw.querySelector('.d-from');
@@ -800,11 +1016,11 @@ h1 {
 
   /* ---------- Sections ---------- */
   var views = {
-    'home':        { c: '#1ea7ff', e: 'Home', t: 'Welcome back', p: "Pick up where you left off. Today's lessons, unread class notes and your next deadline are one tap away." },
-    'gamification':{ c: '#ff2d75', e: 'Gamification', t: 'Streaks, badges and leaderboards', p: 'Earn points for finishing lessons and handing work in on time, then watch your class climb the board.' },
-    'videos':      { c: '#b8ff1f', e: 'Videos', t: 'Every lesson, on replay', p: 'Rewatch any class, skip to the explanation you missed and save short clips for exam week.' },
-    'my-classes':  { c: '#b44dff', e: 'My Classes', t: 'Your classes, by day', p: 'Timetable, teachers and materials for each subject, all in the order your week actually runs.' },
-    'assignments': { c: '#ffa11a', e: 'Assignments', t: 'Due, done and graded', p: 'See what is due this week, what you have already submitted and what your teachers have marked.' }
+    'home':        { c: '#1ea7ff', e: 'Home', t: 'Hey Uzay 👋', p: 'Your streak is alive. Finish two lessons today to keep it going and grab bonus XP.' },
+    'gamification':{ c: '#ff2d75', e: 'Gamification', t: 'Level up your week', p: 'Earn XP for lessons, videos and handing work in on time. Collect badges and climb your class board.' },
+    'videos':      { c: '#b8ff1f', e: 'Videos', t: 'Watch it again, get it faster', p: 'Every lesson on replay. Skip to the part you missed and save short clips for test week.' },
+    'my-classes':  { c: '#b44dff', e: 'My Classes', t: 'Your week, class by class', p: "See what's on each day, who's teaching and what you need to bring." },
+    'assignments': { c: '#ffa11a', e: 'Assignments', t: "What's due?", p: 'Hand work in on time for bonus XP. Your teachers’ grades show up here too.' }
   };
   var view = document.getElementById('view');
 
@@ -853,6 +1069,7 @@ h1 {
     });
     animateAccent(v.c);
     moveSlider(pillFor(id));
+    renderPanel(id);
 
     var token = ++viewSwapToken;
     var textEls = Array.from(view.querySelectorAll('.t'));
@@ -890,6 +1107,274 @@ h1 {
       view.classList.add('swap');
     });
   }
+
+  /* ---------- Panels: demo content under each tab (placeholder data) ---------- */
+  var panel = document.getElementById('panel');
+  var curView = 'home';
+  var DAYS = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'];
+  var DAY_LONG = { mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday' };
+  var DAY_SHORT = { mon: 'Mon', tue: 'Tue', wed: 'Wed', thu: 'Thu', fri: 'Fri' };
+
+  var SUBJ = {
+    math:    { n: 'Math',    c: '#1ea7ff', i: '➗', t: 'Ms. Aydın', room: 'Room 204', unit: 'Unit 4 · Percentages',      p: 68 },
+    science: { n: 'Science', c: '#b8ff1f', i: '🔬', t: 'Mr. Kaya',  room: 'Lab 1',    unit: 'Unit 3 · Forces & Friction', p: 54 },
+    english: { n: 'English', c: '#ff2d75', i: '📚', t: 'Ms. Demir', room: 'Room 112', unit: 'Unit 5 · Story Structure',   p: 80 },
+    history: { n: 'History', c: '#ffa11a', i: '🏛️', t: 'Mr. Çelik', room: 'Room 108', unit: 'Unit 2 · Trade Routes',      p: 41 },
+    art:     { n: 'Art',     c: '#b44dff', i: '🎨', t: 'Ms. Arslan', room: 'Studio',  unit: 'Unit 1 · Colour Mixing',     p: 90 },
+    pe:      { n: 'PE',      c: '#2dd4bf', i: '⚽', t: 'Coach Öz',  room: 'Gym',      unit: 'Term 1 · Teamwork Games',    p: 60 }
+  };
+  /* [start, end, subject, topic] */
+  var TT = {
+    mon: [['09:00', '09:50', 'math', 'Fractions Recap'], ['10:30', '11:20', 'english', 'Reading Club'], ['12:30', '13:20', 'science', 'Lab: Magnets'], ['14:00', '14:50', 'pe', 'Team Games']],
+    tue: [['09:00', '09:50', 'science', 'Forces & Friction'], ['10:30', '11:20', 'history', 'The Silk Road'], ['12:30', '13:20', 'math', 'Percentages'], ['14:00', '14:50', 'art', 'Colour Mixing']],
+    wed: [['09:00', '09:50', 'english', 'Story Structure'], ['10:30', '11:20', 'math', 'Percentages Practice'], ['12:30', '13:20', 'history', 'Ancient Trade Routes'], ['14:00', '14:50', 'science', 'Friction Experiment']],
+    thu: [['09:00', '09:50', 'art', 'Self-portraits'], ['10:30', '11:20', 'math', 'Word Problems'], ['12:30', '13:20', 'english', 'Writing Workshop'], ['14:00', '14:50', 'pe', 'Relay Races']],
+    fri: [['09:00', '09:50', 'history', 'Quiz Day'], ['10:30', '11:20', 'science', 'Lab Report Clinic'], ['12:30', '13:20', 'english', 'Book Talks'], ['14:00', '14:50', 'math', 'Maths Games']]
+  };
+  var MATS = [['Slides', '🖼️'], ['Worksheet', '📄'], ['Video', '▶️']];
+  var VID = [
+    { id: 1, s: 'math',    n: 'Percentages in 5 minutes',             d: '5:12', p: 35,  nw: true },
+    { id: 2, s: 'science', n: 'Why things slow down: friction',       d: '7:40', p: 0,   nw: true },
+    { id: 3, s: 'english', n: 'Build a story: beginning, middle, end', d: '6:05', p: 100 },
+    { id: 4, s: 'history', n: 'The Silk Road, explained',             d: '8:20', p: 60 },
+    { id: 5, s: 'art',     n: 'Mix any colour with 3 paints',         d: '4:30', p: 0 },
+    { id: 6, s: 'math',    n: 'Fractions to decimals, step by step',  d: '6:48', p: 100 },
+    { id: 7, s: 'science', n: 'Lab safety: 6 golden rules',           d: '3:15', p: 0 },
+    { id: 8, s: 'history', n: 'Ancient Egypt in 3 minutes',           d: '3:02', p: 100 },
+    { id: 9, s: 'english', n: 'Verbs that make your writing pop',     d: '5:25', p: 0 }
+  ];
+  var ASG = [
+    { id: 1,  s: 'science', n: 'Lab report: Friction Experiment', st: 'todo', off: 1, time: '18:00', xp: 60 },
+    { id: 2,  s: 'math',    n: 'Percentages worksheet',           st: 'todo', off: 2, time: '09:00', xp: 40 },
+    { id: 3,  s: 'english', n: 'Book review (150 words)',         st: 'todo', off: 5, time: '18:00', xp: 50 },
+    { id: 4,  s: 'history', n: 'Draw a trade-route map',          st: 'todo', off: 7, time: '12:30', xp: 50 },
+    { id: 5,  s: 'art',     n: 'Self-portrait in 3 colours',      st: 'sub', on: 'Monday', xp: 40 },
+    { id: 6,  s: 'math',    n: 'Quiz corrections',                st: 'sub', on: 'Tuesday', xp: 20 },
+    { id: 7,  s: 'english', n: 'Story starter',                   st: 'graded', g: 'A−',   note: 'Great opening line! Add one more detail in the middle.', xp: 50 },
+    { id: 8,  s: 'history', n: 'Ancient Egypt quiz',              st: 'graded', g: '18/20', note: 'Brilliant on the pyramids. Double-check the dates.', xp: 40 },
+    { id: 9,  s: 'science', n: 'Plant diary',                     st: 'graded', g: 'A',    note: 'Super neat observations!', xp: 60 },
+    { id: 10, s: 'math',    n: 'Fractions test',                  st: 'graded', g: '85%',  note: 'Nice work. Practise mixed numbers once more.', xp: 60 }
+  ];
+  var BADGES = [
+    { i: '🌅', n: 'Early Bird',     d: 'Join 5 lessons on time',      c: '#ffa11a', got: 1 },
+    { i: '📝', n: 'Homework Hero',  d: 'Hand in 3 on time',           c: '#1ea7ff', got: 1 },
+    { i: '🧠', n: 'Quiz Whiz',      d: 'Score 90% on a quiz',         c: '#b44dff', got: 1 },
+    { i: '🤝', n: 'Team Player',    d: 'Help your class hit a goal',  c: '#2dd4bf', got: 1 },
+    { i: '🔥', n: 'Streak 7',       d: 'Learn 7 days in a row',       c: '#ff2d75', p: '4 of 7 days' },
+    { i: '🎬', n: 'Bookworm',       d: 'Watch 10 videos',             c: '#b8ff1f', p: '8 of 10' },
+    { i: '🧮', n: 'Math Wizard',    d: 'Finish Unit 4',               c: '#1ea7ff', p: '68% done' },
+    { i: '🏆', n: 'Top 3',          d: 'Reach the top 3 in class',    c: '#ffa11a', p: 'You are 4th' }
+  ];
+  var ST = { level: 7, xp: 2340, need: 3000, week: 1480, streak: 4, vf: 'all', tab: 'todo', day: null, saved: { 3: true, 7: true } };
+
+  var MASCOT = '<svg class="mascot" viewBox="0 0 120 120" aria-hidden="true"><ellipse cx="60" cy="111" rx="28" ry="5" fill="rgba(0,0,0,.14)"/><path d="M60 22C34 22 18 41 18 64c0 24 17 41 42 41s42-17 42-41c0-23-16-42-42-42z" fill="var(--accent)"/><ellipse cx="42" cy="42" rx="14" ry="8" fill="#fff" opacity=".35" transform="rotate(-25 42 42)"/><path d="M60 22v-9" stroke="#0b0e1d" stroke-width="3" stroke-linecap="round"/><circle cx="60" cy="9" r="6" fill="#ffa11a"/><g class="eyes"><circle cx="46" cy="64" r="7" fill="#0b0e1d"/><circle cx="74" cy="64" r="7" fill="#0b0e1d"/><circle cx="48.5" cy="61.5" r="2.2" fill="#fff"/><circle cx="76.5" cy="61.5" r="2.2" fill="#fff"/></g><circle cx="33" cy="78" r="6" fill="#ff2d75" opacity=".35"/><circle cx="87" cy="78" r="6" fill="#ff2d75" opacity=".35"/><path d="M50 81c3 6 17 6 20 0" stroke="#0b0e1d" stroke-width="4" stroke-linecap="round" fill="none"/></svg>';
+
+  function mins(t) { var p = t.split(':'); return (+p[0]) * 60 + (+p[1]); }
+  function nowMins() { var d = new Date(); return d.getHours() * 60 + d.getMinutes(); }
+  function today() { return DAYS[new Date().getDay()]; }
+  function schoolDay() { var t = today(); return TT[t] ? t : 'mon'; }
+  function fmt(n) { return n.toLocaleString('en-US'); }
+  function dayWord(off) {
+    if (off === 0) return 'Today';
+    if (off === 1) return 'Tomorrow';
+    var d = new Date(); d.setDate(d.getDate() + off);
+    return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' });
+  }
+  function bar(p, c) { return '<div class="bar"' + (c ? ' style="--c:' + c + '"' : '') + '><i style="--w:' + Math.max(0, Math.min(100, p)) + '%"></i></div>'; }
+  function chip(txt, c) { return '<span class="chip" style="--c:' + c + '">' + txt + '</span>'; }
+  function addXp(n) {
+    var up = false;
+    ST.xp += n; ST.week += n;
+    while (ST.xp >= ST.need) { ST.xp -= ST.need; ST.level++; up = true; }
+    return up;
+  }
+  function lessonStates(list, live) {
+    var now = nowMins(), soon = false;
+    return list.map(function (l) {
+      if (!live) return 'Later';
+      if (now >= mins(l[1])) return 'Done';
+      if (now >= mins(l[0])) return 'Now';
+      if (!soon) { soon = true; return 'Up next'; }
+      return 'Later';
+    });
+  }
+  function stateChip(state, c) {
+    var col = { 'Done': '#2dd4bf', 'Now': '#ff2d75', 'Up next': c, 'Later': '#8a8fa8' }[state];
+    return chip(state === 'Done' ? 'Done ✓' : (state === 'Now' ? '● Live now' : state), col);
+  }
+  function lessonItem(l, state) {
+    var S = SUBJ[l[2]];
+    return '<li class="lesson' + (state === 'Now' ? ' now' : '') + (state === 'Done' ? ' done' : '') + '" style="--c:' + S.c + '"><span class="time">' + l[0] + '</span><span class="ico">' + S.i + '</span><div class="info"><b>' + l[3] + '</b><small>' + S.n + ' · ' + S.t + ' · ' + S.room + '</small></div>' + stateChip(state, S.c) + '</li>';
+  }
+
+  /* ----- Home ----- */
+  function rHome() {
+    var sd = schoolDay(), live = today() === sd, list = TT[sd], st = lessonStates(list, live);
+    var done = st.filter(function (s) { return s === 'Done'; }).length;
+    var handedIn = ASG.some(function (a) { return a.on === 'today'; });
+    var next = ASG.filter(function (a) { return a.st === 'todo'; }).sort(function (a, b) { return a.off - b.off; })[0];
+    var items = list.map(function (l, i) { return lessonItem(l, st[i]); }).join('');
+    var deadline;
+    if (next) {
+      var S = SUBJ[next.s], u = next.off <= 1 ? '#ff2d75' : (next.off <= 3 ? '#ffa11a' : '#1ea7ff');
+      deadline = '<h2>Next deadline <span class="hint">+' + next.xp + ' XP</span></h2><div class="due-big" style="--c:' + S.c + '"><span class="ico big">' + S.i + '</span><div class="info"><b>' + next.n + '</b><small>' + S.n + ' · ' + S.t + '</small></div></div><div class="chips">' + chip('⏰ ' + dayWord(next.off) + ', ' + next.time, u) + '</div><a class="btn" href="#assignments" style="--c:#ffa11a">Open assignments</a>';
+    } else {
+      deadline = '<div class="empty">' + MASCOT + '<b>All caught up! 🎉</b>Nothing is due. Go watch something fun.</div>';
+    }
+    return '<div class="dash">' +
+      '<section class="card s7 hero-card">' + MASCOT + '<div><div class="kicker">Level ' + ST.level + ' · Explorer</div><div class="big">' + fmt(ST.xp) + ' <small>/ ' + fmt(ST.need) + ' XP</small></div>' + bar(ST.xp / ST.need * 100) + '<div class="chips">' + chip('🔥 ' + ST.streak + '-day streak', '#ff2d75') + chip(fmt(ST.need - ST.xp) + ' XP to Level ' + (ST.level + 1), '#b44dff') + '</div></div></section>' +
+      '<section class="card s5"><h2>Daily quest <span class="hint">+50 XP</span></h2><p class="q">Finish 2 lessons today</p>' + bar(Math.min(2, done) / 2 * 100, '#ff2d75') + '<ul class="checks"><li>✅ Open Uzio</li><li>' + (done >= 1 ? '✅' : '⬜') + ' Finish a lesson</li><li>' + (handedIn ? '✅' : '⬜') + ' Hand in an assignment</li></ul></section>' +
+      '<section class="card s7"><h2>' + (live ? "Today's lessons" : DAY_LONG[sd] + "'s lessons") + ' <a class="hint" href="#my-classes">See the week →</a></h2><ul class="list">' + items + '</ul></section>' +
+      '<section class="card s5">' + deadline + '</section>' +
+      '</div>';
+  }
+
+  /* ----- Gamification ----- */
+  function rGame() {
+    var pct = Math.round(ST.xp / ST.need * 100);
+    var di = (new Date().getDay() + 6) % 7, L = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
+    var week = L.map(function (l, i) {
+      var cls = i === di ? 'today' : (i < di && di - i <= ST.streak ? 'done' : '');
+      return '<div class="day ' + cls + '"><i>' + (cls === 'done' ? '🔥' : '') + '</i>' + l + '</div>';
+    }).join('');
+    var earned = BADGES.filter(function (b) { return b.got; }).length;
+    var badges = BADGES.map(function (b) {
+      return '<div class="badge' + (b.got ? '' : ' lock') + '" style="--c:' + b.c + '"><div class="coin">' + b.i + '</div><b>' + b.n + '</b><small>' + b.d + '</small>' + (b.got ? chip('Earned ✓', '#2dd4bf') : chip(b.p, '#8a8fa8')) + '</div>';
+    }).join('');
+    var P = [{ n: 'Ada', x: 1820 }, { n: 'Can', x: 1650 }, { n: 'Ece', x: 1520 }, { n: 'Mert', x: 1310 }, { n: 'Zeynep', x: 1190 }, { n: 'Uzay', x: ST.week, you: 1 }];
+    P.sort(function (a, b) { return b.x - a.x; });
+    var total = P.reduce(function (s, p) { return s + p.x; }, 0), goal = 10000;
+    var medals = ['🥇', '🥈', '🥉'], cols = ['#1ea7ff', '#ff2d75', '#b8ff1f', '#b44dff', '#ffa11a', '#2dd4bf'];
+    var rows = P.map(function (p, i) {
+      return '<li class="lb' + (p.you ? ' you' : '') + '" style="--c:' + cols[i % 6] + '"><span class="rank">' + (medals[i] || (i + 1)) + '</span><span class="av">' + p.n.charAt(0) + '</span><div class="info"><b>' + p.n + (p.you ? ' (you)' : '') + '</b>' + bar(p.x / P[0].x * 100, cols[i % 6]) + '</div><span class="xp">' + fmt(p.x) + ' XP</span></li>';
+    }).join('');
+    return '<div class="dash">' +
+      '<section class="card s5 lvl"><div class="ring" style="--p:' + pct + '"><b>' + ST.level + '</b><span>LEVEL</span></div><div class="info"><div class="kicker">Explorer</div><div class="big" style="font-size:26px;margin-bottom:6px">' + fmt(ST.xp) + ' XP</div><small>' + fmt(ST.need - ST.xp) + ' XP to Level ' + (ST.level + 1) + '</small></div></section>' +
+      '<section class="card s7"><h2>🔥 ' + ST.streak + '-day streak <span class="hint">Come back tomorrow to make it ' + (ST.streak + 1) + '</span></h2><div class="week">' + week + '</div></section>' +
+      '<section class="card s12"><h2>Badges <span class="hint">' + earned + ' of ' + BADGES.length + ' earned</span></h2><div class="badges">' + badges + '</div></section>' +
+      '<section class="card s7"><h2>Class 7B this week <span class="hint">Resets Monday</span></h2><ul class="list">' + rows + '</ul></section>' +
+      '<section class="card s5"><h2>Class goal <span class="hint">Team up!</span></h2><p class="q">' + (total >= goal ? 'Goal reached! 🎉' : fmt(goal - total) + ' XP to go') + '</p>' + bar(total / goal * 100, '#b8ff1f') + '<div class="chips">' + chip(fmt(total) + ' / ' + fmt(goal) + ' XP', '#b8ff1f') + chip('🎵 Reward: pick the class playlist', '#ff2d75') + '</div></section>' +
+      '</div>';
+  }
+
+  /* ----- Videos ----- */
+  function vidCard(v) {
+    var S = SUBJ[v.s], on = !!ST.saved[v.id];
+    return '<article style="--c:' + S.c + '"><button class="thumb" type="button" data-act="play" data-id="' + v.id + '" aria-label="Play ' + v.n + '"><span class="emo">' + S.i + '</span><span class="play">▶</span><span class="dur">' + v.d + '</span>' + (v.nw ? '<span class="new">NEW</span>' : '') + (v.p > 0 && v.p < 100 ? '<span class="prog"><i style="width:' + v.p + '%"></i></span>' : '') + '</button><div class="vmeta"><div><h3>' + v.n + '</h3><span class="sub">' + S.n + (v.p === 100 ? ' · Watched ✓' : '') + '</span></div><button class="star' + (on ? ' on' : '') + '" type="button" data-act="save" data-id="' + v.id + '" data-key="save' + v.id + '" aria-pressed="' + on + '" aria-label="Save for later">' + (on ? '★' : '☆') + '</button></div></article>';
+  }
+  function fbtn(v, label, c) {
+    return '<button class="sg" type="button" data-act="vf" data-v="' + v + '" data-key="vf' + v + '" aria-pressed="' + (ST.vf === v) + '"' + (c ? ' style="--c:' + c + '"' : '') + '>' + label + '</button>';
+  }
+  function rVideos() {
+    var f = ST.vf, keys = Object.keys(SUBJ).filter(function (k) { return k !== 'pe'; });
+    var chips = '<div class="seg" role="group" aria-label="Filter videos">' + fbtn('all', 'All', null) + keys.map(function (k) { return fbtn(k, SUBJ[k].i + ' ' + SUBJ[k].n, SUBJ[k].c); }).join('') + fbtn('saved', '★ Saved', '#ffa11a') + '</div>';
+    var cont = '';
+    if (f === 'all') {
+      var keep = VID.filter(function (v) { return v.p > 0 && v.p < 100; });
+      if (keep.length) cont = '<section class="card s12"><h2>Keep watching <span class="hint">Pick up where you stopped</span></h2><div class="vgrid">' + keep.map(vidCard).join('') + '</div></section>';
+    }
+    var list = VID.filter(function (v) { return f === 'all' || (f === 'saved' ? ST.saved[v.id] : v.s === f); });
+    var title = f === 'all' ? 'All lessons' : (f === 'saved' ? 'Saved clips' : SUBJ[f].n);
+    var grid = list.length ? '<div class="vgrid">' + list.map(vidCard).join('') + '</div>' : '<div class="empty">' + MASCOT + (f === 'saved' ? 'Tap ☆ on any video to save it for test week.' : 'No videos here yet.') + '</div>';
+    return '<div class="dash"><div class="s12">' + chips + '</div>' + cont + '<section class="card s12"><h2>' + title + ' <span class="hint">' + list.length + ' video' + (list.length === 1 ? '' : 's') + '</span></h2>' + grid + '</section></div>';
+  }
+
+  /* ----- My Classes ----- */
+  function rClasses() {
+    var cur = ST.day || schoolDay(), live = today() === cur, list = TT[cur], st = lessonStates(list, live);
+    var tabs = ['mon', 'tue', 'wed', 'thu', 'fri'].map(function (d) {
+      return '<button class="sg" type="button" data-act="day" data-v="' + d + '" data-key="day' + d + '" aria-pressed="' + (d === cur) + '">' + DAY_SHORT[d] + (today() === d ? ' · today' : '') + '</button>';
+    }).join('');
+    var slots = list.map(function (l, i) {
+      var S = SUBJ[l[2]], m = [[0, 1], [0, 2], [1, 2], [0]][i % 4];
+      var mats = m.map(function (k) { return chip(MATS[k][1] + ' ' + MATS[k][0], S.c); }).join('');
+      return '<li class="slot"><div class="when"><b>' + l[0] + '</b><small>to ' + l[1] + '</small></div><div class="lcard' + (st[i] === 'Now' ? ' now' : '') + '" style="--c:' + S.c + '"><div class="row"><span class="ico">' + S.i + '</span><div class="info"><b>' + l[3] + '</b><small>' + S.n + ' · ' + S.t + ' · ' + S.room + '</small></div>' + (live ? stateChip(st[i], S.c) : '') + '</div><div class="chips">' + mats + '</div></div></li>';
+    }).join('');
+    var subs = Object.keys(SUBJ).map(function (k) {
+      var S = SUBJ[k];
+      return '<div class="scard" style="--c:' + S.c + '"><div class="row"><span class="ico">' + S.i + '</span><div class="info"><b>' + S.n + '</b><small>' + S.t + ' · ' + S.room + '</small></div></div><div class="unit info"><b style="font-size:14px">' + S.unit + '</b></div>' + bar(S.p) + '<small class="sub" style="margin:0">' + S.p + '% through the unit</small></div>';
+    }).join('');
+    return '<div class="dash">' +
+      '<section class="card s12"><h2>' + DAY_LONG[cur] + (live ? ' · today' : '') + '</h2><div class="seg" role="group" aria-label="Pick a day" style="margin-bottom:18px">' + tabs + '</div><ul class="list">' + slots + '</ul></section>' +
+      '<section class="card s12"><h2>Your subjects <span class="hint">Teachers, rooms and progress</span></h2><div class="sgrid">' + subs + '</div></section>' +
+      '</div>';
+  }
+
+  /* ----- Assignments ----- */
+  function asgItem(a) {
+    var S = SUBJ[a.s], end = '';
+    if (a.st === 'todo') {
+      var u = a.off <= 1 ? '#ff2d75' : (a.off <= 3 ? '#ffa11a' : '#1ea7ff');
+      end = chip('⏰ ' + dayWord(a.off) + ', ' + a.time, u) + '<button class="btn" type="button" data-act="done" data-id="' + a.id + '" data-key="done' + a.id + '" style="--c:' + S.c + '">Mark done · +' + a.xp + ' XP</button>';
+    } else if (a.st === 'sub') {
+      end = chip('✅ Handed in ' + a.on, '#2dd4bf') + chip('Waiting for your teacher', '#8a8fa8');
+    } else {
+      end = '<span class="grade" style="--c:' + S.c + '">' + a.g + '</span>';
+    }
+    return '<li class="card asg" style="--c:' + S.c + '"><span class="ico">' + S.i + '</span><div class="info"><b>' + a.n + '</b><small>' + S.n + ' · ' + S.t + (a.note ? '<br>“' + a.note + '”' : '') + '</small></div><div class="end">' + end + '</div></li>';
+  }
+  function rAssign() {
+    var cnt = { todo: 0, sub: 0, graded: 0 }, xpLeft = 0;
+    ASG.forEach(function (a) { cnt[a.st]++; if (a.st === 'todo') xpLeft += a.xp; });
+    var stat = function (n, label, c) { return '<section class="card s3 stat" style="--c:' + c + '"><b>' + n + '</b><span>' + label + '</span></section>'; };
+    var tabs = [['todo', 'To do'], ['sub', 'Handed in'], ['graded', 'Graded']].map(function (t) {
+      return '<button class="sg" type="button" data-act="tab" data-v="' + t[0] + '" data-key="tab' + t[0] + '" aria-pressed="' + (ST.tab === t[0]) + '">' + t[1] + ' <span class="n">' + cnt[t[0]] + '</span></button>';
+    }).join('');
+    var items = ASG.filter(function (a) { return a.st === ST.tab; });
+    if (ST.tab === 'todo') items.sort(function (a, b) { return a.off - b.off; });
+    var body = items.length ? '<ul class="list">' + items.map(asgItem).join('') + '</ul>' : '<div class="empty">' + MASCOT + '<b>' + (ST.tab === 'todo' ? 'All caught up! 🎉' : 'Nothing here yet') + '</b>' + (ST.tab === 'todo' ? 'Nothing is due. Go watch something fun.' : 'Check back soon.') + '</div>';
+    return '<div class="dash">' +
+      stat(cnt.todo, 'To do', '#ff2d75') + stat(cnt.sub, 'Handed in', '#2dd4bf') + stat(cnt.graded, 'Graded', '#1ea7ff') + stat('+' + xpLeft, 'XP up for grabs', '#ffa11a') +
+      '<div class="s12"><div class="seg" role="group" aria-label="Assignment status">' + tabs + '</div></div>' +
+      '<div class="s12">' + body + '</div>' +
+      '</div>';
+  }
+
+  var RENDER = { 'home': rHome, 'gamification': rGame, 'videos': rVideos, 'my-classes': rClasses, 'assignments': rAssign };
+  function renderPanel(id, quiet) {
+    curView = id;
+    var f = document.activeElement, key = f && f.getAttribute ? f.getAttribute('data-key') : null;
+    panel.classList.toggle('quiet', !!quiet);
+    panel.innerHTML = (RENDER[id] || rHome)();
+    Array.prototype.forEach.call(panel.querySelectorAll('.dash > *'), function (el, i) { el.style.animationDelay = (i * 55) + 'ms'; });
+    if (key) { var n = panel.querySelector('[data-key="' + key + '"]'); if (n) n.focus({ preventScroll: true }); }
+  }
+
+  /* toast */
+  var toastEl = document.createElement('div');
+  toastEl.className = 'toast';
+  toastEl.setAttribute('role', 'status');
+  document.body.appendChild(toastEl);
+  var toastTimer = 0;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+  }
+
+  panel.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    var act = b.getAttribute('data-act'), v = b.getAttribute('data-v'), id = +b.getAttribute('data-id');
+    if (act === 'vf') ST.vf = v;
+    else if (act === 'day') ST.day = v;
+    else if (act === 'tab') ST.tab = v;
+    else if (act === 'save') { if (ST.saved[id]) delete ST.saved[id]; else ST.saved[id] = true; }
+    else if (act === 'play') {
+      var vv = VID.filter(function (x) { return x.id === id; })[0];
+      toast('▶ ' + vv.n + ' (player coming soon)');
+      return;
+    } else if (act === 'done') {
+      var a = ASG.filter(function (x) { return x.id === id; })[0];
+      if (a && a.st === 'todo') {
+        a.st = 'sub'; a.on = 'today';
+        var up = addXp(a.xp);
+        toast(up ? '🎉 Level ' + ST.level + '! +' + a.xp + ' XP' : '+' + a.xp + ' XP · nice work!');
+      }
+    }
+    renderPanel(curView, true);
+  });
 
   window.addEventListener('hashchange', function () { show(location.hash.slice(1)); });
   show(location.hash.slice(1) || 'home');
