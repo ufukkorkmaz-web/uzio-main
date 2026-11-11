@@ -101,14 +101,16 @@ nav ul {
 }
 
 
-/* ---------- Mode control, bottom right ---------- */
+/* ---------- Mode control, top right ---------- */
 .mode {
   position: fixed;
   z-index: 60;
   right: max(16px, env(safe-area-inset-right, 0px));
-  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  top: calc(16px + env(safe-area-inset-top, 0px));
   display: flex;
 }
+/* keep the top-right switch clear of the nav pills on narrower screens */
+@media (max-width: 1100px) { .top { padding-top: 58px; } }
 
 /* ---------- Theme switch ---------- */
 .switch {
@@ -324,67 +326,65 @@ nav ul {
 .brand .face::before, .brand .face::after { z-index: 1; }
 .brand .label { display: inline-flex; align-items: center; gap: 8px; }
 
-/* AI helper: floating button, bottom centre */
+/* ---------- Ask Uzio: a 3D glass orb with a face that follows the cursor ---------- */
 .ask {
   position: fixed;
   z-index: 80;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  right: max(10px, env(safe-area-inset-right, 0px));
+  bottom: calc(6px + env(safe-area-inset-bottom, 0px));
 }
-/* At rest: just the sparkle + text, sitting in the bottom glow. No pill. */
-.ask .pill.brand .face {
-  background: transparent;
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-  border-color: transparent;
-  box-shadow: none;
+.uzio-orb {
+  display: flex;
+  align-items: center;
+  gap: 0;
   color: var(--fg);
-  text-shadow: none;
-  transition: color .3s ease, border-color .4s ease, box-shadow .4s ease, text-shadow .3s ease;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  cursor: pointer;
 }
-.ask .goo { opacity: 0; }
-.ask .liquid { opacity: 0; transform: scale(.3); transition: opacity .5s ease, transform .7s cubic-bezier(.3,1.5,.5,1); }
-.ask .face::before { opacity: 0; transition: opacity .4s ease; }
-/* On hover/focus: the rainbow liquid fills in and the pill takes shape */
-.ask .pill.brand:is(:hover, :focus-visible) .face {
-  border-color: rgba(255, 255, 255, .55);
-  box-shadow: inset 0 1px 0 var(--rim), 0 10px 24px -8px rgba(23, 26, 44, .45);
-  color: #fff;
-  text-shadow: 0 1px 6px rgba(0, 0, 0, .45);
+.uzio-orb canvas {
+  display: block;
+  width: 128px;
+  height: 128px;
+  animation: orbfloat 4.2s ease-in-out infinite;
+  transition: transform .45s cubic-bezier(.3,1.6,.5,1);
 }
-.ask .pill:is(:hover, :focus-visible) .liquid { opacity: .72; transform: scale(1); }
-.ask .pill:is(:hover, :focus-visible) .face::before { opacity: 1; }
-.ask .pill:is(:hover, :focus-visible) .goo { opacity: .55; }
-.brand .goo .base {
-  background: linear-gradient(90deg, #1ea7ff, #ff2d75, #b8ff1f, #b44dff, #ffa11a, #1ea7ff);
-  background-size: 300% 100%;
-  animation: liquidflow 40s ease-in-out infinite alternate;
-}
-.liquid {
+.uzio-orb:hover canvas, .uzio-orb:focus-visible canvas { transform: scale(1.08); }
+.uzio-orb:active canvas { transform: scale(.94); }
+.uzio-orb { position: relative; }
+/* The pill stays hidden until you hover (or keyboard-focus) the orb, then pops out at its top-left */
+.orb-label {
   position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  border-radius: inherit;
+  z-index: 2; /* in front of the orb */
+  right: calc(100% - 42px);
+  bottom: calc(100% - 36px);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font: 600 14px/1 var(--font-body);
+  letter-spacing: .02em;
+  white-space: nowrap;
+  color: var(--fg);
+  background: var(--card);
+  border: 2px solid var(--card-edge);
+  box-shadow: 0 3px 0 var(--card-shadow);
+  -webkit-backdrop-filter: blur(10px) saturate(1.5);
+  backdrop-filter: blur(10px) saturate(1.5);
+  opacity: 0;
   pointer-events: none;
-  background: linear-gradient(100deg, #1ea7ff, #ff2d75, #b8ff1f, #b44dff, #ffa11a, #1ea7ff);
-  background-size: 300% 100%;
-  opacity: .72;
-  animation: liquidflow 40s ease-in-out infinite alternate;
+  transform: translate(16px, 12px) scale(.8);
+  transform-origin: right bottom;
+  transition: opacity .25s ease, transform .45s cubic-bezier(.3,1.5,.5,1);
 }
-.liquid i { position: absolute; width: 46px; height: 46px; border-radius: 50%; filter: blur(15px); opacity: .75; }
-.liquid i:nth-child(1) { left: -8px; top: -14px; background: #ff2d75; animation: lq1 26s ease-in-out infinite alternate; }
-.liquid i:nth-child(2) { right: -6px; bottom: -16px; background: #1ea7ff; animation: lq2 30s ease-in-out infinite alternate; }
-.liquid i:nth-child(3) { left: 30%; top: -18px; background: #b8ff1f; animation: lq3 34s ease-in-out infinite alternate; }
-.liquid i:nth-child(4) { left: 52%; bottom: -20px; background: #b44dff; animation: lq4 28s ease-in-out infinite alternate; }
-.liquid i:nth-child(5) { left: 8px; bottom: -18px; background: #ffa11a; animation: lq5 32s ease-in-out infinite alternate; }
-@keyframes liquidflow { to { background-position: 100% 0; } }
-@keyframes lq1 { to { translate: 28px 10px; scale: 1.08; } }
-@keyframes lq2 { to { translate: -28px -10px; scale: .95; } }
-@keyframes lq3 { to { translate: -14px 12px; scale: 1.06; } }
-@keyframes lq4 { to { translate: 16px -12px; scale: 1.08; } }
-@keyframes lq5 { to { translate: 24px -10px; scale: .95; } }
+.uzio-orb:hover .orb-label, .uzio-orb:focus-visible .orb-label { opacity: 1; transform: translate(0, 0) scale(1); }
+.uzio-orb:focus-visible .orb-label { outline: 2px solid var(--fg); outline-offset: 3px; }
+.uzio-orb.no-gl canvas { background: conic-gradient(from 0deg, #1ea7ff, #ff2d75, #b8ff1f, #b44dff, #ffa11a, #1ea7ff); clip-path: circle(37%); }
+@keyframes orbfloat { 50% { transform: translateY(-5px); } }
+@media (max-width: 520px) {
+  .uzio-orb canvas { width: 104px; height: 104px; }
+  .orb-label { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .uzio-orb canvas { animation: none; } }
 
 /* ---------- Sliding highlight ---------- */
 .slider {
@@ -436,7 +436,7 @@ nav ul {
   pointer-events: none;
   opacity: .86;
   transform: translateY(0) scaleX(1.01);
-  transform-origin: 50% 100%;
+  transform-origin: var(--gx, 85%) 100%;
   filter: blur(44px) saturate(1.40);
   background:
     radial-gradient(58% 128% at 8% 103%, rgba(255, 232, 188, .56) 0%, rgba(255, 213, 154, .30) 38%, transparent 74%),
@@ -488,7 +488,7 @@ nav ul {
   :root:not([data-theme="light"]) .uzio-bottom-glow { mix-blend-mode: screen; }
 }
 /* Hover/focus on the Ask Uzio button: the glow gathers in under the pill */
-body:has(.ask .pill:is(:hover, :focus-visible)) .uzio-bottom-glow {
+body:has(.ask a:is(:hover, :focus-visible)) .uzio-bottom-glow {
   opacity: 0;
   transform: translateY(-16px) scaleX(var(--gather, .3));
   filter: blur(34px) saturate(1.5);
@@ -802,9 +802,10 @@ a.hint:hover { text-decoration: underline; }
 </header>
 
 <div class="ask">
-  <a class="pill brand" href="#uzio" aria-label="Ask Uzio" style="--c:#ffffff">
-    <span class="goo" aria-hidden="true"><i class="base"></i></span>
-    <span class="face"><span class="liquid" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span class="label"><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><path d="M12 2l2.2 6.3L20.5 10.5l-6.3 2.2L12 19l-2.2-6.3L3.5 10.5l6.3-2.2z"/><path d="M19 15l.9 2.1 2.1.9-2.1.9L19 21l-.9-2.1-2.1-.9 2.1-.9z"/></svg>Ask Uzio</span></span></a>
+  <a class="uzio-orb" href="#uzio" aria-label="Ask Uzio, the AI helper">
+    <span class="orb-label">Ask Uzio</span>
+    <canvas id="uzioOrb" width="256" height="256" aria-hidden="true"></canvas>
+  </a>
 </div>
 
 <div class="mode">
@@ -1003,11 +1004,13 @@ a.hint:hover { text-decoration: underline; }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(resettle);
 
   /* ---------- Uzio: size the glow so it gathers to about the pill's width ---------- */
-  var askPill = document.querySelector('.ask .pill');
+  var askPill = document.querySelector('.ask a');
   function setGather() {
     if (!askPill) return;
     var s = Math.min(1, (askPill.offsetWidth * 1.6) / window.innerWidth);
     root.style.setProperty('--gather', s.toFixed(3));
+    var r = askPill.getBoundingClientRect();
+    root.style.setProperty('--gx', Math.round(r.left + r.width / 2) + 'px');
   }
   setGather();
   window.addEventListener('resize', setGather);
@@ -1375,6 +1378,189 @@ a.hint:hover { text-decoration: underline; }
     }
     renderPanel(curView, true);
   });
+
+  /* ---------- Uzio orb: raw WebGL, no libraries ---------- */
+  (function () {
+    var link = document.querySelector('.uzio-orb');
+    var cv = document.getElementById('uzioOrb');
+    if (!link || !cv) return;
+    var gl = cv.getContext('webgl', { alpha: true, premultipliedAlpha: true, antialias: false });
+    if (!gl) { link.classList.add('no-gl'); return; }
+
+    var VS = 'attribute vec2 a;varying vec2 vUv;void main(){vUv=a*.5+.5;gl_Position=vec4(a,0.,1.);}';
+    var FS = [
+'precision highp float;',
+'uniform vec2 uRes;uniform float uTime;uniform vec2 uGaze;uniform float uBlink;uniform float uHappy;',
+'varying vec2 vUv;',
+'const vec3 C0=vec3(.118,.655,1.);const vec3 C1=vec3(1.,.176,.459);const vec3 C2=vec3(.722,1.,.122);',
+'const vec3 C3=vec3(.706,.302,1.);const vec3 C4=vec3(1.,.631,.102);',
+/* five coloured light blobs drifting around inside the ball */
+'vec3 field(vec3 s,float t,out float ws){',
+'  vec3 acc=vec3(0.);ws=0.;',
+'  for(int i=0;i<5;i++){',
+'    float fi=float(i);',
+'    vec3 c=.58*vec3(sin(t*.55+fi*1.26+.3),cos(t*.47+fi*2.1),sin(t*.63+fi*.93+1.1));',
+'    vec3 d=s-c;float w=exp(-dot(d,d)*3.0);',
+'    vec3 col=i==0?C0:(i==1?C1:(i==2?C2:(i==3?C3:C4)));',
+'    acc+=col*w;ws+=w;',
+'  }',
+'  return acc;',
+'}',
+'void main(){',
+'  vec2 p=vUv*2.-1.;',
+'  float t=uTime;',
+'  float R=.74*(1.+.012*sin(t*1.7));',
+'  float r=length(p);',
+'  float aa=3./uRes.y;',
+/* outer halo */
+'  float ws;',
+'  vec3 hacc=field(vec3(p/R*.62,0.),t,ws);',
+'  vec3 hcol=hacc/(ws+.2);',
+'  float halo=exp(-max(r-R,0.)*7.5)*.36*smoothstep(0.,.25,ws+.15)*smoothstep(.98,.8,r);',
+'  vec3 outc=hcol*halo;float outa=halo*.8;',
+'  float edge=1.-smoothstep(R-aa,R+aa,r);',
+'  if(edge<=0.){gl_FragColor=vec4(outc,outa);return;}',
+/* sphere surface */
+'  vec2 q=p/R;float rr=min(length(q),1.);float z=sqrt(max(1.-rr*rr,0.));',
+'  vec3 n=vec3(q,z);',
+'  vec3 s=vec3(q*.95,z*.55-.25);s.xy+=n.xy*.12*sin(t*.8);',
+'  vec3 acc=field(s,t,ws);',
+'  vec3 inner=acc/(ws+.16);',
+'  float glow=clamp(ws,0.,1.5);',
+'  vec3 base=mix(vec3(.10,.12,.32),inner,smoothstep(0.,.8,glow));',
+'  vec3 c=base*(.78+.5*pow(z,.8))+inner*.12*glow;',
+'  float fres=pow(1.-z,2.4);',
+'  c=mix(c,mix(vec3(1.),inner,.45),fres*.6);',
+'  c=mix(c,vec3(dot(c,vec3(.3,.59,.11))),.22);',
+'  c=mix(c,vec3(.80,.83,.96),.2);',
+/* face: a frame that turns toward the cursor */
+'  vec3 f=normalize(vec3(uGaze.x*.62,uGaze.y*.5,1.));',
+'  vec3 rt=normalize(cross(vec3(0.,1.,0.),f));vec3 up=cross(f,rt);',
+'  float u=dot(n,rt),v=dot(n,up),w=dot(n,f);',
+'  float fm=smoothstep(.12,.42,w);',
+'  vec3 ink=vec3(.055,.065,.16);',
+'  float bl=max(uBlink,.07);',
+'  for(int k=0;k<2;k++){',
+'    float sx=k==0?-1.:1.;',
+'    vec2 b=vec2(u-sx*.46,v+.045)/vec2(.115,.068);',
+'    c=mix(c,vec3(1.,.38,.55),exp(-dot(b,b)*1.1)*.55*fm);',
+'  }',
+'  for(int k=0;k<2;k++){',
+'    float sx=k==0?-1.:1.;',
+'    vec2 e=vec2(u-sx*.29,v-.105);',
+'    float d=length(e/vec2(.098,.145*bl));',
+'    float ea=smoothstep(1.,.88,d)*fm;',
+'    c=mix(c,ink,ea);',
+'    float h1=smoothstep(1.,.6,length((e-vec2(-.024,.052*bl))/vec2(.034,.034*bl+.001)));',
+'    float h2=smoothstep(1.,.6,length((e-vec2(.03,-.05*bl))/vec2(.017,.017*bl+.001)));',
+'    c=mix(c,vec3(1.),max(h1,h2*.85)*ea*smoothstep(.2,.6,bl));',
+'  }',
+/* mouth: small smile that opens into a happy "o" on hover or click */
+'  vec2 m=vec2(u,v+.185);',
+'  float s1=m.x/.125;',
+'  float line=smoothstep(.019,.011,abs(m.y-(.03*s1*s1-.03)))*smoothstep(1.,.82,abs(s1));',
+'  vec2 me=m-vec2(0.,-.035);',
+'  float od=length(me/vec2(.07+.02*uHappy,.012+.06*uHappy));',
+'  float open=smoothstep(1.,.86,od);',
+'  float mk=mix(line,open,smoothstep(.12,.5,uHappy))*fm;',
+'  c=mix(c,ink,mk);',
+'  float tongue=open*smoothstep(.1,.5,uHappy)*smoothstep(-.012,-.04,me.y)*fm;',
+'  c=mix(c,vec3(1.,.42,.58),tongue);',
+/* gloss */
+'  c+=vec3(1.)*smoothstep(1.,0.,length((q-vec2(-.4,.5))/vec2(.3,.14)))*.6;',
+'  c+=vec3(1.)*smoothstep(1.,0.,length((q-vec2(.42,-.55))/vec2(.2,.06)))*.22;',
+'  c=clamp(c,0.,1.);',
+'  vec3 rgb=outc*(1.-edge)+c*edge;',
+'  float a=outa*(1.-edge)+edge;',
+'  gl_FragColor=vec4(rgb,a);',
+'}'
+    ].join('\n');
+
+    function sh(type, src) {
+      var s = gl.createShader(type);
+      gl.shaderSource(s, src); gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { console.warn(gl.getShaderInfoLog(s)); return null; }
+      return s;
+    }
+    var vs = sh(gl.VERTEX_SHADER, VS), fs = sh(gl.FRAGMENT_SHADER, FS);
+    if (!vs || !fs) { link.classList.add('no-gl'); return; }
+    var pr = gl.createProgram();
+    gl.attachShader(pr, vs); gl.attachShader(pr, fs); gl.linkProgram(pr);
+    if (!gl.getProgramParameter(pr, gl.LINK_STATUS)) { link.classList.add('no-gl'); return; }
+    gl.useProgram(pr);
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+    var loc = gl.getAttribLocation(pr, 'a');
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+    var U = {};
+    ['uRes', 'uTime', 'uGaze', 'uBlink', 'uHappy'].forEach(function (n) { U[n] = gl.getUniformLocation(pr, n); });
+    gl.clearColor(0, 0, 0, 0);
+
+    function fit() {
+      var d = Math.min(window.devicePixelRatio || 1, 2);
+      var w = Math.round(cv.clientWidth * d);
+      if (w && cv.width !== w) { cv.width = w; cv.height = w; }
+      gl.viewport(0, 0, cv.width, cv.height);
+    }
+    window.addEventListener('resize', fit);
+    fit();
+
+    /* cursor tracking: the face turns toward the pointer anywhere on the page */
+    var px = null, py = null, lastMove = 0, hov = 0, hovT = 0, press = 0;
+    window.addEventListener('pointermove', function (e) { px = e.clientX; py = e.clientY; lastMove = performance.now(); }, { passive: true });
+    window.addEventListener('pointerdown', function (e) { px = e.clientX; py = e.clientY; lastMove = performance.now(); }, { passive: true });
+    link.addEventListener('pointerenter', function () { hovT = 1; });
+    link.addEventListener('pointerleave', function () { hovT = 0; });
+    link.addEventListener('focus', function () { hovT = 1; });
+    link.addEventListener('blur', function () { hovT = 0; });
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      press = 1;
+      toast('✨ Uzio says hi! The AI helper is coming soon.');
+      window.dispatchEvent(new CustomEvent('uzio:open')); /* hook the AI chat up here */
+    });
+
+    var gx = 0, gy = 0, blinkAt = 1800, blinkStart = -1, last = performance.now(), T = reduce ? 3 : 0;
+    function frame(now) {
+      requestAnimationFrame(frame);
+      if (document.hidden) { last = now; return; }
+      var dt = Math.min(0.05, (now - last) / 1000); last = now;
+      if (!reduce) T += dt;
+      var tx = 0, ty = 0;
+      if (px !== null && now - lastMove < 5000) {
+        var r = cv.getBoundingClientRect();
+        var dx = px - (r.left + r.width / 2), dy = py - (r.top + r.height / 2);
+        var dist = Math.hypot(dx, dy) || 1, m = Math.min(1, dist / 240);
+        tx = dx / dist * m; ty = -dy / dist * m;
+      } else if (!reduce) { /* idle: look around lazily */
+        tx = Math.sin(T * .5) * .55; ty = Math.sin(T * .37 + 1) * .3;
+      }
+      var k = 1 - Math.exp(-dt * 9);
+      gx += (tx - gx) * k; gy += (ty - gy) * k;
+      hov += (hovT - hov) * (1 - Math.exp(-dt * 10));
+      press = Math.max(0, press - dt * 2.2);
+      var happy = Math.min(1, hov * .75 + press);
+      var blink = 1;
+      if (!reduce) {
+        if (blinkStart < 0 && now > blinkAt) blinkStart = now;
+        if (blinkStart >= 0) {
+          var ph = (now - blinkStart) / 170;
+          if (ph >= 1) { blinkStart = -1; blinkAt = now + 1800 + Math.random() * 3200; }
+          else blink = 1 - Math.sin(Math.PI * ph);
+        }
+      }
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform2f(U.uRes, cv.width, cv.height);
+      gl.uniform1f(U.uTime, T);
+      gl.uniform2f(U.uGaze, gx, gy);
+      gl.uniform1f(U.uBlink, blink);
+      gl.uniform1f(U.uHappy, happy);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    }
+    requestAnimationFrame(frame);
+  })();
 
   window.addEventListener('hashchange', function () { show(location.hash.slice(1)); });
   show(location.hash.slice(1) || 'home');
