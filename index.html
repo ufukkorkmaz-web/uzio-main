@@ -1390,7 +1390,7 @@ a.hint:hover { text-decoration: underline; }
     var VS = 'attribute vec2 a;varying vec2 vUv;void main(){vUv=a*.5+.5;gl_Position=vec4(a,0.,1.);}';
     var FS = [
 'precision highp float;',
-'uniform vec2 uRes;uniform float uTime;uniform vec2 uGaze;uniform float uBlink;uniform float uHappy;',
+'uniform vec2 uRes;uniform float uTime;uniform vec2 uGaze;uniform float uBlink;uniform float uHappy;uniform float uSpin;',
 'varying vec2 vUv;',
 'const vec3 C0=vec3(.118,.655,1.);const vec3 C1=vec3(1.,.176,.459);const vec3 C2=vec3(.722,1.,.122);',
 'const vec3 C3=vec3(.706,.302,1.);const vec3 C4=vec3(1.,.631,.102);',
@@ -1424,6 +1424,7 @@ a.hint:hover { text-decoration: underline; }
 '  vec2 q=p/R;float rr=min(length(q),1.);float z=sqrt(max(1.-rr*rr,0.));',
 '  vec3 n=vec3(q,z);',
 '  vec3 s=vec3(q*.95,z*.55-.25);s.xy+=n.xy*.12*sin(t*.8);',
+'  float cs=cos(uSpin),sn=sin(uSpin);s.xz=vec2(cs*s.x+sn*s.z,-sn*s.x+cs*s.z);',
 '  vec3 acc=field(s,t,ws);',
 '  vec3 inner=acc/(ws+.16);',
 '  float glow=clamp(ws,0.,1.5);',
@@ -1434,7 +1435,7 @@ a.hint:hover { text-decoration: underline; }
 '  c=mix(c,vec3(dot(c,vec3(.3,.59,.11))),.22);',
 '  c=mix(c,vec3(.80,.83,.96),.2);',
 /* face: a frame that turns toward the cursor */
-'  vec3 f=normalize(vec3(uGaze.x*.62,uGaze.y*.5,1.));',
+'  vec3 f=normalize(vec3(uGaze.x*.62,uGaze.y*.5,1.));f=vec3(cs*f.x+sn*f.z,f.y,-sn*f.x+cs*f.z);',
 '  vec3 rt=normalize(cross(vec3(0.,1.,0.),f));vec3 up=cross(f,rt);',
 '  float u=dot(n,rt),v=dot(n,up),w=dot(n,f);',
 '  float fm=smoothstep(.12,.42,w);',
@@ -1495,7 +1496,7 @@ a.hint:hover { text-decoration: underline; }
     gl.enableVertexAttribArray(loc);
     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     var U = {};
-    ['uRes', 'uTime', 'uGaze', 'uBlink', 'uHappy'].forEach(function (n) { U[n] = gl.getUniformLocation(pr, n); });
+    ['uRes', 'uTime', 'uGaze', 'uBlink', 'uHappy', 'uSpin'].forEach(function (n) { U[n] = gl.getUniformLocation(pr, n); });
     gl.clearColor(0, 0, 0, 0);
 
     function fit() {
@@ -1523,11 +1524,52 @@ a.hint:hover { text-decoration: underline; }
     });
 
     var gx = 0, gy = 0, blinkAt = 1800, blinkStart = -1, last = performance.now(), T = reduce ? 3 : 0;
+    var ease = function (x) { return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+    var c01 = function (x) { return Math.max(0, Math.min(1, x)); };
+    var PI = Math.PI, sin = Math.sin;
+
+    /* Little moves. Each one tweaks the orb for progress ph (0..1) through the object o. */
+    var MOVES = {
+      /* quick spin with a hop: the face turns away, goes round and comes back */
+      spin:   { d: 1050, f: function (ph, o, m) { o.spin = m.dir * PI * 2 * ease(ph); o.jy = -15 * sin(PI * c01(ph * 1.05)); o.sy = 1 + .07 * sin(PI * ph); o.sx = 1 - .04 * sin(PI * ph); o.happy = .8 * sin(PI * ph); } },
+      /* bored: a happy shimmy */
+      wiggle: { d: 900,  f: function (ph, o) { o.rot = 10 * sin(ph * PI * 6) * (1 - ph); o.happy = .55 * sin(PI * ph); } },
+      /* bored: a big yawn with eyes squeezed shut */
+      yawn:   { d: 2300, f: function (ph, o) { var b = c01(sin(PI * ph) * 2.2); o.blink = 1 - .93 * b; o.happy = b; o.sy = 1 + .05 * b; o.sx = 1 - .03 * b; o.gyo = .25 * b; } },
+      /* bored: looks left, right and up, as if watching something */
+      look:   { d: 2800, f: function (ph, o) { o.gx = sin(ph * PI * 2) * .95; o.gy = .25 * sin(ph * PI * 4) + .1; } },
+      /* bored: two little hops */
+      bounce: { d: 1200, f: function (ph, o) { var a = Math.abs(sin(ph * PI * 2)); o.jy = -13 * a; o.sy = 1 + .06 * a - .05 * (1 - a) * sin(PI * ph); o.sx = 1 - (o.sy - 1) * .6; o.happy = .6 * sin(PI * ph); } },
+      /* bored: gets sleepy, eyes droop, head nods, then wakes up */
+      sleepy: { d: 3200, f: function (ph, o) { var s = sin(PI * ph); o.blink = 1 - .88 * s * s; o.gyo = -.45 * s; o.rot = 4 * sin(ph * PI * 2) * s; } }
+    };
+    var BORED = ['wiggle', 'yawn', 'look', 'bounce', 'sleepy'];
+    var mv = null, lastBored = '';
+    var nextSpin = last + 10000 + Math.random() * 6000, nextBored = last + 8000;
+    function start(name, now) { mv = { n: name, t0: now, dir: Math.random() < .5 ? 1 : -1 }; }
+
     function frame(now) {
       requestAnimationFrame(frame);
       if (document.hidden) { last = now; return; }
       var dt = Math.min(0.05, (now - last) / 1000); last = now;
       if (!reduce) T += dt;
+
+      /* schedule: a spin every 10-18s, and when nobody has touched it for 6s it gets bored */
+      if (!reduce && !mv && hov < .2 && press === 0) {
+        if (now > nextSpin) { start('spin', now); nextSpin = now + 10000 + Math.random() * 8000; }
+        else if (now - lastMove > 6000 && now > nextBored) {
+          var pool = BORED.filter(function (n) { return n !== lastBored; });
+          lastBored = pool[Math.floor(Math.random() * pool.length)];
+          start(lastBored, now);
+          nextBored = now + 5000 + Math.random() * 5000;
+        }
+      }
+      var o = { spin: 0, jy: 0, sx: 1, sy: 1, rot: 0, happy: 0, blink: 1, gx: null, gy: null, gyo: 0 };
+      if (mv) {
+        var ph = (now - mv.t0) / MOVES[mv.n].d;
+        if (ph >= 1) mv = null; else MOVES[mv.n].f(ph, o, mv);
+      }
+
       var tx = 0, ty = 0;
       if (px !== null && now - lastMove < 5000) {
         var r = cv.getBoundingClientRect();
@@ -1535,28 +1577,35 @@ a.hint:hover { text-decoration: underline; }
         var dist = Math.hypot(dx, dy) || 1, m = Math.min(1, dist / 240);
         tx = dx / dist * m; ty = -dy / dist * m;
       } else if (!reduce) { /* idle: look around lazily */
-        tx = Math.sin(T * .5) * .55; ty = Math.sin(T * .37 + 1) * .3;
+        tx = sin(T * .5) * .55; ty = sin(T * .37 + 1) * .3;
       }
+      if (o.gx !== null) { tx = o.gx; ty = o.gy; }
+      ty += o.gyo;
       var k = 1 - Math.exp(-dt * 9);
       gx += (tx - gx) * k; gy += (ty - gy) * k;
       hov += (hovT - hov) * (1 - Math.exp(-dt * 10));
       press = Math.max(0, press - dt * 2.2);
-      var happy = Math.min(1, hov * .75 + press);
+      var happy = Math.min(1, hov * .75 + press + o.happy);
       var blink = 1;
       if (!reduce) {
         if (blinkStart < 0 && now > blinkAt) blinkStart = now;
         if (blinkStart >= 0) {
-          var ph = (now - blinkStart) / 170;
-          if (ph >= 1) { blinkStart = -1; blinkAt = now + 1800 + Math.random() * 3200; }
-          else blink = 1 - Math.sin(Math.PI * ph);
+          var bp = (now - blinkStart) / 170;
+          if (bp >= 1) { blinkStart = -1; blinkAt = now + 1800 + Math.random() * 3200; }
+          else blink = 1 - sin(PI * bp);
         }
       }
+      blink = Math.min(blink, o.blink);
+      cv.style.translate = '0 ' + o.jy.toFixed(2) + 'px';
+      cv.style.scale = o.sx.toFixed(3) + ' ' + o.sy.toFixed(3);
+      cv.style.rotate = o.rot.toFixed(2) + 'deg';
       gl.clear(gl.COLOR_BUFFER_BIT);
       gl.uniform2f(U.uRes, cv.width, cv.height);
       gl.uniform1f(U.uTime, T);
       gl.uniform2f(U.uGaze, gx, gy);
       gl.uniform1f(U.uBlink, blink);
       gl.uniform1f(U.uHappy, happy);
+      gl.uniform1f(U.uSpin, o.spin);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
     requestAnimationFrame(frame);
