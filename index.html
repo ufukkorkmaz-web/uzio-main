@@ -310,9 +310,14 @@ h1 { margin: 0; font-size: clamp(36px, 6.4vw, 60px); line-height: 1.03; font-wei
   transition: transform .55s var(--spring), box-shadow .3s ease;
 }
 .tile::after { content: ""; position: absolute; right: -50px; top: -50px; width: 140px; height: 140px; border-radius: 50%; background: var(--c); opacity: .1; filter: blur(8px); transition: opacity .4s ease, transform .6s var(--smooth); }
-.tile:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 20px 44px color-mix(in srgb, var(--c) 22%, transparent), var(--card-shadow); }
+.tile:hover { transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(-5px) scale(1.02); box-shadow: 0 20px 44px color-mix(in srgb, var(--c) 22%, transparent), var(--card-shadow); }
 .tile:hover::after { opacity: .22; transform: scale(1.4); }
 .tile:active { transform: scale(.96); }
+/* tilt: the card leans toward the pointer, a soft glint follows it and the icon drifts a little */
+.tile::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .3s ease; background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), color-mix(in srgb, var(--c) 22%, transparent), transparent 60%); }
+.tile.tilting::before { opacity: 1; }
+.tile.tilting, .thumb.tilting { transition: transform .12s ease-out, box-shadow .3s ease; }
+.tile .app-icon { translate: calc(var(--px, 0) * 7px) calc(var(--py, 0) * 7px); transition: translate .18s ease-out; }
 .app-icon {
   width: 58px; height: 58px; display: grid; place-items: center; border-radius: 18px; font-size: 29px; margin-bottom: 18px;
   background: linear-gradient(180deg, color-mix(in srgb, var(--c) 65%, #fff), var(--c));
@@ -378,10 +383,10 @@ h1 { margin: 0; font-size: clamp(36px, 6.4vw, 60px); line-height: 1.03; font-wei
   box-shadow: 0 14px 30px color-mix(in srgb, var(--c) 30%, transparent), inset 0 1px 0 rgba(255, 255, 255, .45);
   transition: transform .55s var(--spring);
 }
-.thumb::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 25% 10%, rgba(255, 255, 255, .4), transparent 55%); }
-.thumb:hover { transform: scale(1.03); }
+.thumb::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at var(--gx, 25%) var(--gy, 10%), rgba(255, 255, 255, .4), transparent 55%); }
+.thumb:hover { transform: perspective(800px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(1.03); }
 .thumb:active { transform: scale(.97); }
-.thumb .emo { position: absolute; right: 18px; top: 8px; font-size: 76px; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .25)); transition: transform .6s var(--spring); }
+.thumb .emo { position: absolute; right: 18px; top: 8px; font-size: 76px; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, .25)); translate: calc(var(--px, 0) * 10px) calc(var(--py, 0) * 8px); transition: transform .6s var(--spring), translate .18s ease-out; }
 .thumb:hover .emo { transform: scale(1.12) rotate(-6deg); }
 .thumb .play { position: absolute; left: 14px; bottom: 14px; width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; padding-left: 3px; color: #fff; font-size: 16px; background: rgba(255, 255, 255, .26); -webkit-backdrop-filter: blur(14px) saturate(1.6); backdrop-filter: blur(14px) saturate(1.6); box-shadow: inset 0 0 0 .5px rgba(255, 255, 255, .6), inset 0 1px 0 rgba(255, 255, 255, .7); }
 .thumb .new { position: absolute; left: 14px; top: 14px; padding: 5px 10px; border-radius: 99px; background: #fff; color: #000; font-size: 11px; font-weight: 800; letter-spacing: .06em; }
@@ -447,6 +452,58 @@ h1 { margin: 0; font-size: clamp(36px, 6.4vw, 60px); line-height: 1.03; font-wei
 }
 .toast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
 
+/* ---------- Onboarding ---------- */
+.onb {
+  position: fixed; inset: 0; z-index: 150; display: grid; place-items: center; padding: 20px;
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.4); backdrop-filter: blur(22px) saturate(1.4);
+  opacity: 0; visibility: hidden; transition: opacity .35s ease, visibility .35s;
+}
+.onb.show { opacity: 1; visibility: visible; }
+.onb-card {
+  width: min(460px, 100%); max-height: calc(100dvh - 40px); overflow: auto; padding: 30px 26px 22px; border-radius: 34px; text-align: center;
+  background: color-mix(in srgb, var(--card) 84%, transparent);
+  transform: translateY(14px) scale(.96); transition: transform .6s var(--spring);
+}
+.onb.show .onb-card { transform: none; }
+.onb-orb { width: 92px; height: 92px; margin: 0 auto 16px; font-size: 36px; animation: orbfloat 4.2s ease-in-out infinite; }
+.onb-step { animation: rise .5s var(--smooth) both; }
+.onb-title { margin: 0 0 6px; font-size: 28px; font-weight: 800; letter-spacing: -.03em; line-height: 1.1; text-wrap: balance; }
+.onb-sub { margin: 0; color: var(--fg2); font-size: 16px; line-height: 1.4; }
+.onb-input {
+  width: 100%; margin-top: 18px; padding: 15px 18px; border: 0; border-radius: 18px; background: var(--fill); color: var(--fg);
+  font: inherit; font-size: 19px; font-weight: 600; text-align: center;
+}
+.onb-input::placeholder { color: var(--fg2); font-weight: 500; }
+.onb-choices { display: grid; gap: 10px; margin-top: 18px; }
+.opt {
+  display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 0; border-radius: 20px; background: var(--fill); text-align: left; cursor: pointer;
+  transition: transform .4s var(--spring), background .2s ease, box-shadow .2s ease;
+}
+.opt:hover { transform: scale(1.02); }
+.opt:active { transform: scale(.97); }
+.opt .e { font-size: 28px; line-height: 1; }
+.opt b { display: block; font-size: 17px; font-weight: 700; letter-spacing: -.01em; }
+.opt small { display: block; margin-top: 2px; color: var(--fg2); font-size: 13.5px; line-height: 1.3; }
+.onb-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin-top: 18px; }
+.pick {
+  padding: 11px 16px; border: 0; border-radius: 999px; background: var(--fill); font-size: 16px; font-weight: 600; cursor: pointer;
+  transition: transform .4s var(--spring), background .2s ease, box-shadow .2s ease;
+}
+.pick:hover { transform: scale(1.05); }
+.pick:active { transform: scale(.94); }
+.opt[aria-pressed="true"], .pick[aria-pressed="true"] { background: color-mix(in srgb, var(--accent) 18%, var(--card)); box-shadow: inset 0 0 0 2.5px var(--accent); }
+.onb-foot { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; margin-top: 24px; }
+#onbLeft { justify-self: start; }
+#onbRight { justify-self: end; }
+.onb-skip { padding: 9px 10px; border: 0; border-radius: 12px; background: transparent; color: var(--fg2); font-size: 15px; font-weight: 600; cursor: pointer; }
+.onb-skip:hover { color: var(--fg); }
+.dots { display: flex; gap: 7px; }
+.dots i { width: 8px; height: 8px; border-radius: 99px; background: var(--fill2); transition: width .4s var(--spring), background .3s ease; }
+.dots i.on { width: 22px; background: var(--accent); }
+.btn:disabled { opacity: .45; pointer-events: none; filter: saturate(.6); }
+@media (max-width: 420px) { .onb-card { padding: 24px 18px 18px; } .onb-title { font-size: 25px; } }
+
 /* ---------- Mobile: iOS tab bar at the bottom ---------- */
 @media (max-width: 760px) {
   .bar { grid-template-columns: 1fr auto; padding-bottom: 10px; }
@@ -507,7 +564,7 @@ h1 { margin: 0; font-size: clamp(36px, 6.4vw, 60px); line-height: 1.03; font-wei
       <svg viewBox="0 0 24 24" aria-hidden="true"><path class="hl" d="M4 6.5h16"/><path class="hl" d="M4 12h16"/><path class="hl" d="M4 17.5h16"/></svg>
     </button>
     <div class="menu glass" id="menu" inert>
-      <div class="menu-head"><span class="avatar">U</span><div><b>Uzay</b><small>Level 7 · Explorer</small></div></div>
+      <div class="menu-head"><span class="avatar" id="menuAvatar">U</span><div><b id="menuName">Uzay</b><small>Level 7 · Explorer</small></div></div>
       <hr>
       <button class="menu-item" type="button" data-menu="Account">Account
         <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21a7.5 7.5 0 0 1 15 0"/></svg></button>
@@ -515,6 +572,8 @@ h1 { margin: 0; font-size: clamp(36px, 6.4vw, 60px); line-height: 1.03; font-wei
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/></svg></button>
       <button class="menu-item" type="button" data-menu="My Plan">My Plan
         <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 10h18M7 15h4"/></svg></button>
+      <button class="menu-item" type="button" id="replayOnb">Replay welcome
+        <svg viewBox="0 0 24 24"><path d="M4 12a8 8 0 1 0 2.6-5.9"/><path d="M4 4v4.5h4.5"/></svg></button>
       <hr>
       <div class="menu-item" style="cursor:default"><span>Dark mode</span>
         <button id="themeToggle" class="switch" type="button" role="switch" aria-checked="false" aria-label="Dark mode">
@@ -546,6 +605,14 @@ h1 { margin: 0; font-size: clamp(36px, 6.4vw, 60px); line-height: 1.03; font-wei
     <span class="orb-fx" aria-hidden="true"><span class="hat" id="orbHat"></span></span>
   </span>
 </a>
+
+<div class="onb" id="onb" role="dialog" aria-modal="true" aria-labelledby="onbTitle" inert>
+  <div class="onb-card glass">
+    <div class="uzio-mini onb-orb" aria-hidden="true"><span>U</span></div>
+    <div id="onbBody"></div>
+    <div class="onb-foot"><span id="onbLeft"></span><span class="dots" id="onbDots" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="onbRight"></span></div>
+  </div>
+</div>
 
 <div class="toast" id="toast" role="status"></div>
 
@@ -700,6 +767,7 @@ h1 { margin: 0; font-size: clamp(36px, 6.4vw, 60px); line-height: 1.03; font-wei
   var viewEl = $('view'), panel = $('panel'), curView = 'home', swapToken = 0;
 
   /* ---------- Helpers ---------- */
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function chip(t, c) { return '<span class="chip" style="--c:' + c + '">' + t + '</span>'; }
   function bar(p, c) { return '<div class="bar-track"' + (c ? ' style="--c:' + c + '"' : '') + '><i style="--w:' + Math.max(0, Math.min(100, p)) + '%"></i></div>'; }
   function tile(icon, title, desc, m1, m2, c, action) {
@@ -718,7 +786,7 @@ h1 { margin: 0; font-size: clamp(36px, 6.4vw, 60px); line-height: 1.03; font-wei
         tile('🧠', 'Challenge me', 'Let Uzio choose your next task.', 'Adaptive', '2–4 min', 'var(--orange)', 'Challenge me') +
         tile('🎬', 'Watch', 'Short video. Tiny challenge after.', '3–7 min', 'English IRL', 'var(--purple)', 'Open Watch') +
       '</div>' +
-      '<section class="card s7 uzio-pick"><div class="uzio-mini"><span>U</span></div><div class="info"><div class="kicker">Uzio picked this for you</div><b>Can you beat my vocabulary challenge?</b><p class="sub">You were strong on yesterday\'s words, so I made this one a little harder.</p><button class="btn" type="button" data-act="demo" data-v="Uzio vocabulary challenge" style="--c:var(--green)">Try it →</button></div></section>' +
+      '<section class="card s7 uzio-pick"><div class="uzio-mini"><span>U</span></div><div class="info"><div class="kicker">Uzio picked this for you</div><b>Can you beat my vocabulary challenge?</b>' + pickLine() + '<button class="btn" type="button" data-act="demo" data-v="Uzio vocabulary challenge" style="--c:var(--green)">Try it →</button></div></section>' +
       '<section class="card s5"><h2>Today\'s quest <span class="hint">+50 XP</span></h2>' + bar(67, 'var(--pink)') + '<div class="group" style="margin-top:16px;box-shadow:none;background:var(--fill)">' +
         '<div class="row"><span class="check">✓</span><div class="info"><b>Learn</b><small>5 new words</small></div></div>' +
         '<div class="row"><span class="check">✓</span><div class="info"><b>Play</b><small>1 quick game</small></div></div>' +
@@ -868,6 +936,174 @@ h1 { margin: 0; font-size: clamp(36px, 6.4vw, 60px); line-height: 1.03; font-wei
       renderPanel(curView, true);
     }
   });
+
+  /* ---------- Profile + onboarding ---------- */
+  var LEVELS = [
+    { id: 'start', e: '🌱', t: 'Just starting', s: 'I know some words and short sentences.', fit: 'easy and friendly' },
+    { id: 'grow',  e: '🚀', t: 'Getting there', s: 'I can talk about everyday things.', fit: 'a good stretch' },
+    { id: 'conf',  e: '🏆', t: 'Pretty confident', s: 'I want to sound more natural.', fit: 'a little tricky' }
+  ];
+  var INTERESTS = [['🎮', 'Games'], ['🎵', 'Music'], ['⚽', 'Sports'], ['🐾', 'Animals'], ['🚀', 'Space'], ['🍕', 'Food'], ['🎬', 'Movies'], ['💻', 'Technology'], ['🎨', 'Art']];
+  var PKEY = 'uzio-profile';
+  var P = { name: 'Uzay', level: '', interests: [] };
+  var seen = false, hasProfile = false;
+
+  (function () {
+    var s = null;
+    try { s = JSON.parse(localStorage.getItem(PKEY)); } catch (e) {}
+    if (!s || typeof s !== 'object') return;
+    seen = !!s.done;
+    if (typeof s.name === 'string' && s.name.trim()) {
+      hasProfile = true;
+      P.name = s.name.trim().slice(0, 20);
+      if (LEVELS.some(function (l) { return l.id === s.level; })) P.level = s.level;
+      if (Array.isArray(s.interests)) P.interests = s.interests.filter(function (n) { return INTERESTS.some(function (i) { return i[1] === n; }); }).slice(0, 3);
+    }
+  })();
+
+  function saveP() {
+    try { localStorage.setItem(PKEY, JSON.stringify({ done: true, name: hasProfile ? P.name : '', level: P.level, interests: P.interests })); } catch (e) {}
+  }
+  function joinList(a) {
+    a = a.map(function (x) { return x.toLowerCase(); });
+    return a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+  }
+  /* the "Uzio picked this for you" line on Home */
+  function pickLine() {
+    var lv = LEVELS.filter(function (l) { return l.id === P.level; })[0], t;
+    if (P.interests.length && lv) t = 'Because you like ' + joinList(P.interests) + ', I picked words from your world. Today\'s set is ' + lv.fit + '.';
+    else if (P.interests.length) t = 'Because you like ' + joinList(P.interests) + ', I picked words from your world.';
+    else if (lv) t = 'I picked a set that is ' + lv.fit + ' for you.';
+    else t = 'You were strong on yesterday\'s words, so I made this one a little harder.';
+    return '<p class="sub">' + t + '</p>';
+  }
+  function applyProfile() {
+    views.home.t = 'Hey ' + P.name + ' 👋';
+    $('menuName').textContent = P.name;
+    $('menuAvatar').textContent = P.name.charAt(0).toUpperCase();
+    if (!firstShow && curView === 'home') { $('title').textContent = views.home.t; renderPanel('home', true); }
+  }
+  applyProfile();
+
+  var onb = $('onb'), onbBody = $('onbBody'), onbLeft = $('onbLeft'), onbRight = $('onbRight'), onbDots = $('onbDots');
+  var onbStep = 0, draft = { name: '', level: '', interests: [] }, onbFrom = null;
+  var behind = [$('bar'), document.querySelector('main'), document.querySelector('.uzio-orb'), $('backTop')];
+  function setBehind(on) { behind.forEach(function (el) { if (el) el.inert = on; }); }
+
+  function onbRender() {
+    var s = onbStep, h = '', nm = esc(draft.name.trim());
+    if (s === 0) {
+      h = '<h2 class="onb-title" id="onbTitle">Hi! I\'m Uzio.</h2><p class="onb-sub">I\'ll help you practise English. What should I call you?</p>' +
+        '<input class="onb-input" id="onbName" type="text" maxlength="20" autocomplete="off" autocapitalize="words" spellcheck="false" placeholder="Your name" aria-label="Your name" value="' + esc(draft.name) + '">';
+    } else if (s === 1) {
+      h = '<h2 class="onb-title" id="onbTitle">Nice to meet you, ' + nm + '!</h2><p class="onb-sub">How do you feel about English?</p><div class="onb-choices" role="group" aria-label="English level">' +
+        LEVELS.map(function (l) {
+          return '<button class="opt" type="button" data-level="' + l.id + '" aria-pressed="' + (draft.level === l.id) + '"><span class="e">' + l.e + '</span><span><b>' + l.t + '</b><small>' + l.s + '</small></span></button>';
+        }).join('') + '</div>';
+    } else if (s === 2) {
+      h = '<h2 class="onb-title" id="onbTitle">What do you like?</h2><p class="onb-sub">Pick up to 3. I\'ll use them in your practice.</p><div class="onb-chips" role="group" aria-label="Interests">' +
+        INTERESTS.map(function (i) {
+          return '<button class="pick" type="button" data-int="' + i[1] + '" aria-pressed="' + (draft.interests.indexOf(i[1]) > -1) + '">' + i[0] + ' ' + i[1] + '</button>';
+        }).join('') + '</div>';
+    } else {
+      h = '<h2 class="onb-title" id="onbTitle">All set, ' + nm + '! 🎉</h2><p class="onb-sub">Your home page is ready. You can redo this any time from the menu.</p>';
+    }
+    onbBody.innerHTML = '<div class="onb-step">' + h + '</div>';
+    onbLeft.innerHTML = s === 0
+      ? '<button class="onb-skip" type="button" data-onb="skip">Skip for now</button>'
+      : '<button class="onb-skip" type="button" data-onb="back">Back</button>';
+    onbRight.innerHTML = s === 3
+      ? '<button class="btn" type="button" data-onb="finish">Let\'s go →</button>'
+      : '<button class="btn" type="button" data-onb="next" id="onbNext"' + (s === 0 && !draft.name.trim() ? ' disabled' : '') + '>Next</button>';
+    Array.prototype.forEach.call(onbDots.children, function (d, i) { d.classList.toggle('on', i === s); });
+    setTimeout(function () {
+      var f = onbBody.querySelector('input, .opt, .pick') || onb.querySelector('[data-onb="finish"], [data-onb="next"]');
+      if (f) f.focus({ preventScroll: true });
+    }, 60);
+  }
+
+  function openOnb(from) {
+    setMenu(false);
+    onbFrom = from || null;
+    draft = { name: hasProfile ? P.name : '', level: P.level, interests: P.interests.slice() };
+    onbStep = 0;
+    onbRender();
+    setBehind(true); onb.inert = false;
+    onb.classList.add('show');
+  }
+  function closeOnb(commit) {
+    if (commit) {
+      P.name = draft.name.trim().slice(0, 20) || P.name;
+      hasProfile = true;
+      P.level = draft.level;
+      P.interests = draft.interests.slice();
+    }
+    seen = true; saveP();
+    onb.classList.remove('show'); onb.inert = true; setBehind(false);
+    if (commit) { applyProfile(); toast('Welcome, ' + P.name + '! ✨'); }
+    var f = onbFrom; onbFrom = null;
+    if (f && f.focus) f.focus({ preventScroll: true });
+  }
+
+  onb.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-onb], [data-level], [data-int]');
+    if (!t) return;
+    if (t.hasAttribute('data-level')) {
+      draft.level = t.getAttribute('data-level');
+      Array.prototype.forEach.call(onbBody.querySelectorAll('[data-level]'), function (b) { b.setAttribute('aria-pressed', String(b === t)); });
+      return;
+    }
+    if (t.hasAttribute('data-int')) {
+      var n = t.getAttribute('data-int'), i = draft.interests.indexOf(n);
+      if (i > -1) draft.interests.splice(i, 1);
+      else if (draft.interests.length >= 3) { toast('Pick up to 3 ✨'); return; }
+      else draft.interests.push(n);
+      t.setAttribute('aria-pressed', String(draft.interests.indexOf(n) > -1));
+      return;
+    }
+    var a = t.getAttribute('data-onb');
+    if (a === 'next') { if (onbStep === 0 && !draft.name.trim()) return; onbStep++; onbRender(); }
+    else if (a === 'back') { onbStep--; onbRender(); }
+    else if (a === 'skip') closeOnb(false);
+    else if (a === 'finish') closeOnb(true);
+  });
+  onb.addEventListener('input', function (e) {
+    if (e.target.id !== 'onbName') return;
+    draft.name = e.target.value;
+    var nx = $('onbNext'); if (nx) nx.disabled = !draft.name.trim();
+  });
+  onb.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.id === 'onbName') {
+      e.preventDefault();
+      var nx = $('onbNext'); if (nx && !nx.disabled) nx.click();
+    } else if (e.key === 'Escape') closeOnb(false);
+  });
+  $('replayOnb').addEventListener('click', function () { openOnb(acctBtn); });
+  if (!seen) setTimeout(function () { openOnb(null); }, 900); /* first visit: let the page appear, then say hi */
+
+  /* ---------- Tilt cards: tiles and video thumbnails lean toward the pointer ---------- */
+  var tiltEl = null;
+  function tiltOff(el) {
+    el.classList.remove('tilting');
+    ['--rx', '--ry', '--gx', '--gy', '--px', '--py'].forEach(function (p) { el.style.removeProperty(p); });
+  }
+  panel.addEventListener('pointermove', function (e) {
+    if (reduce || e.pointerType === 'touch') return;
+    var el = e.target.closest('.tile, .thumb');
+    if (el !== tiltEl) { if (tiltEl) tiltOff(tiltEl); tiltEl = el; }
+    if (!el) return;
+    var r = el.getBoundingClientRect();
+    var x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+    var max = el.classList.contains('thumb') ? 7 : 9;
+    el.classList.add('tilting');
+    el.style.setProperty('--ry', ((x - .5) * 2 * max).toFixed(2) + 'deg');
+    el.style.setProperty('--rx', ((.5 - y) * 2 * max).toFixed(2) + 'deg');
+    el.style.setProperty('--gx', (x * 100).toFixed(1) + '%');
+    el.style.setProperty('--gy', (y * 100).toFixed(1) + '%');
+    el.style.setProperty('--px', ((x - .5) * 2).toFixed(2));
+    el.style.setProperty('--py', ((y - .5) * 2).toFixed(2));
+  });
+  panel.addEventListener('pointerleave', function () { if (tiltEl) { tiltOff(tiltEl); tiltEl = null; } });
 
   /* ---------- Uzio orb: raw WebGL, no libraries ---------- */
   (function () {
