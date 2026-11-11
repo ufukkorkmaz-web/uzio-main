@@ -161,6 +161,10 @@ button { font: inherit; color: inherit; }
 .round-btn:hover { transform: scale(1.07); }
 .round-btn:active { transform: scale(.92); }
 .round-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.round-btn .hl { transform-box: fill-box; transform-origin: center; transition: transform .35s var(--spring), opacity .2s ease; }
+.acct.open .hl:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+.acct.open .hl:nth-child(2) { opacity: 0; }
+.acct.open .hl:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
 .menu {
   position: absolute; right: 0; top: calc(100% + 10px); width: 258px; padding: 8px; border-radius: 26px;
   opacity: 0; visibility: hidden; pointer-events: none;
@@ -475,7 +479,7 @@ h1 { margin: 0; font-size: clamp(36px, 6.4vw, 60px); line-height: 1.03; font-wei
 
   <div class="acct" id="acct">
     <button class="round-btn glass" id="acctBtn" type="button" aria-label="Open account menu" aria-expanded="false" aria-controls="menu">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.2" r="3.9"/><path d="M4.6 20.3a7.4 7.4 0 0 1 14.8 0"/></svg>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path class="hl" d="M4 6.5h16"/><path class="hl" d="M4 12h16"/><path class="hl" d="M4 17.5h16"/></svg>
     </button>
     <div class="menu glass" id="menu" inert>
       <div class="menu-head"><span class="avatar">U</span><div><b>Uzay</b><small>Level 7 · Explorer</small></div></div>
